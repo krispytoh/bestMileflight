@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kris Finance · Miles Escape Planner (Nov 2026)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#14213D;--ink-soft:#4F5B75;--paper:#EEF2F7;--card:#FFFFFF;--line:#D3DAE5;
+  --gold:#A87A1E;--gold-wash:#F6EDD8;--scoot:#F2C500;--save:#1F7A55;--save-wash:#DFF1E7;
+  --warn:#B4441F;--warn-wash:#FBE5DC;--chip:#E3E9F1;--bar:rgba(255,255,255,.92);
+  color-scheme:light;box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#E8EDF5;--ink-soft:#A3AEC2;--paper:#0F1626;--card:#18223A;--line:#2B3854;
+  --gold:#E0B656;--gold-wash:#3A3020;--save:#5CCB98;--save-wash:#163327;--warn:#F08A63;--warn-wash:#3D2219;--chip:#24304C;--bar:rgba(24,34,58,.94);color-scheme:dark}}
+:root[data-theme="dark"]{--ink:#E8EDF5;--ink-soft:#A3AEC2;--paper:#0F1626;--card:#18223A;--line:#2B3854;
+  --gold:#E0B656;--gold-wash:#3A3020;--save:#5CCB98;--save-wash:#163327;--warn:#F08A63;--warn-wash:#3D2219;--chip:#24304C;--bar:rgba(24,34,58,.94);color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+[hidden]{display:none!important}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:720px;margin:0 auto;padding:16px 16px 120px}
+h1,h2,h3{font-family:"Bricolage Grotesque","Public Sans",system-ui,sans-serif;font-weight:700;line-height:1.15;margin:0}
+h1{font-size:clamp(1.6rem,5.5vw,2.2rem)}
+h2{font-size:clamp(1.4rem,4.8vw,1.8rem);margin-bottom:6px}
+h3{font-size:1.1rem;margin:18px 0 8px}
+p{margin:.35rem 0}
+a{color:var(--gold)}
+button{font:inherit;color:inherit}
+.muted{color:var(--ink-soft);font-size:.92rem}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.brand{font-weight:700;color:var(--gold)}
+.deadline{background:var(--warn-wash);color:var(--warn);font-weight:600;font-size:.82rem;padding:4px 9px;border-radius:6px;white-space:nowrap}
+.modes{display:flex;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:4px;margin:4px 0 18px}
+.modes button{flex:1;border:0;background:none;padding:10px 6px;border-radius:7px;font-weight:600;color:var(--ink-soft);cursor:pointer}
+.modes button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+
+/* progress */
+.progress{display:flex;gap:6px;margin-bottom:6px}
+.progress i{flex:1;height:5px;border-radius:3px;background:var(--line)}
+.progress i.on{background:var(--gold)}
+.stepno{font-size:.85rem;color:var(--ink-soft);margin-bottom:14px}
+
+/* step 1 */
+.search{position:relative;margin:12px 0 10px}
+.search input{width:100%;font:500 1.1rem "Public Sans",system-ui,sans-serif;color:var(--ink);background:var(--card);border:2px solid var(--line);border-radius:12px;padding:14px 44px 14px 14px}
+.search input:focus{border-color:var(--gold);outline:none}
+.search .clear{position:absolute;right:8px;top:50%;transform:translateY(-50%);border:0;background:var(--chip);width:30px;height:30px;border-radius:50%;cursor:pointer}
+.regions{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none}
+.regions button,.pill{border:1px solid var(--line);background:var(--card);padding:8px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;font-weight:500;font-size:.9rem}
+.regions button[aria-pressed="true"],.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.dests{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.dest{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:84px}
+.dest[aria-pressed="true"]{border:2px solid var(--gold);padding:11px 13px}
+.dest .nm{font-weight:700;font-size:1.05rem}
+.dest .ct{font-size:.8rem;color:var(--ink-soft)}
+.dest .fr{margin-top:auto;padding-top:6px;font-size:.88rem}
+.dest .fr b{color:var(--save)}
+.star{color:var(--gold);font-size:.8rem;font-weight:700}
+.noresult{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:16px}
+
+/* step 2 */
+.big2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bigbtn{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:14px;text-align:left;cursor:pointer}
+.bigbtn b{display:block;font-size:1.05rem}
+.bigbtn span{font-size:.85rem;color:var(--ink-soft)}
+.bigbtn[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-wash)}
+.stepper{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px;width:max-content}
+.stepper button{width:44px;height:44px;border-radius:10px;border:1px solid var(--line);background:var(--paper);font-size:1.4rem;font-weight:700;cursor:pointer}
+.stepper button:disabled{opacity:.35;cursor:not-allowed}
+.stepper output{min-width:90px;text-align:center;font:700 1.3rem "Bricolage Grotesque",system-ui,sans-serif}
+.cabins{display:flex;flex-wrap:wrap;gap:6px}
+.cal-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.cal-head{display:grid;grid-template-columns:repeat(7,1fr);font-size:.75rem;color:var(--ink-soft);text-align:center;margin-bottom:4px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+.cal button,.cal span{aspect-ratio:1/1;border-radius:8px;border:0;font-weight:600;font-size:.95rem;display:flex;align-items:center;justify-content:center}
+.cal button{cursor:pointer;background:var(--save-wash);color:var(--save)}
+.cal button.no{background:var(--chip);color:var(--ink-soft);text-decoration:line-through;font-weight:400}
+.cal button.free{background:var(--chip);color:var(--ink)}
+.cal button.na{background:var(--paper);color:var(--ink-soft);opacity:.45;cursor:not-allowed}
+.cal button[aria-pressed="true"]{background:var(--gold);color:#fff;text-decoration:none}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.8rem;color:var(--ink-soft);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-2px;margin-right:4px}
+.linkbtn{border:0;background:none;color:var(--gold);font-weight:600;text-decoration:underline;cursor:pointer;padding:6px 0}
+.hint{background:var(--gold-wash);border-radius:10px;padding:10px 12px;font-size:.9rem;margin-top:10px}
+
+/* step 3 */
+.miles{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.miles input{font:700 1.8rem "Bricolage Grotesque",system-ui,sans-serif;color:var(--ink);width:100%;max-width:260px;background:var(--card);border:2px solid var(--line);border-radius:12px;padding:10px 14px}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+
+/* results */
+.editbar{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.editbar button{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 10px;font-size:.85rem;cursor:pointer}
+.editbar button::after{content:" ✎";color:var(--gold)}
+.ticket{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.t-main{padding:16px 18px}
+.badge{display:inline-block;font-size:.8rem;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--save-wash);color:var(--save);margin-bottom:8px}
+.badge.short{background:var(--warn-wash);color:var(--warn)}
+.t-total{font:700 2.2rem/1 "Bricolage Grotesque",system-ui,sans-serif}
+.t-total small{font:500 .9rem "Public Sans",system-ui,sans-serif;color:var(--ink-soft)}
+.t-verdict{font-weight:600;margin-top:6px}
+.perf{border-top:2px dashed var(--line);margin:0 14px;position:relative}
+.perf::before,.perf::after{content:"";position:absolute;top:-11px;width:20px;height:20px;border-radius:50%;background:var(--paper);border:1px solid var(--line)}
+.perf::before{left:-25px}.perf::after{right:-25px}
+.t-legs{padding:14px 18px}
+.leg{display:grid;grid-template-columns:52px 1fr;gap:10px;padding:8px 0}
+.leg+.leg{border-top:1px solid var(--line)}
+.leg .lb{font-weight:700;color:var(--ink-soft);font-size:.85rem;padding-top:2px}
+.leg .rt{font-weight:700}
+.leg .dt{font-size:.88rem;color:var(--ink-soft)}
+.tag{font-size:.75rem;font-weight:700;padding:2px 7px;border-radius:5px;background:var(--chip)}
+.tag.sq{background:var(--ink);color:var(--paper)}.tag.tr{background:var(--scoot);color:#1a1a1a}
+.tag.est{background:var(--warn-wash);color:var(--warn)}
+.strike{text-decoration:line-through;color:var(--ink-soft);font-weight:400}
+.cta{display:flex;flex-direction:column;gap:8px;padding:0 18px 18px}
+.btn{display:block;text-align:center;text-decoration:none;font-weight:700;padding:13px 14px;border-radius:10px;border:0;cursor:pointer}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn.wa{background:#25D366;color:#0b2e17}
+.btn.ghost{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.callout{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-top:12px}
+.callout.good{border-left:4px solid var(--save)}
+.callout.bad{border-left:4px solid var(--warn)}
+.steps{margin:6px 0 0;padding-left:20px}
+.steps li{margin-bottom:6px}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:12px}
+summary{cursor:pointer;padding:14px 16px;font-weight:700;list-style:none;display:flex;justify-content:space-between}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:1.3rem;line-height:1;color:var(--gold)}
+details[open] summary::after{content:"−"}
+.dbody{padding:0 16px 16px}
+.alt{display:flex;justify-content:space-between;gap:10px;align-items:center;width:100%;text-align:left;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px;cursor:pointer}
+.alt b{white-space:nowrap}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:10px 0}
+.stat{background:var(--paper);border-radius:8px;padding:10px 12px}
+.stat b{display:block;font:700 1.15rem "Bricolage Grotesque",system-ui,sans-serif}
+.stat span{font-size:.8rem;color:var(--ink-soft)}
+.field label{display:block;font-size:.85rem;color:var(--ink-soft);margin-bottom:4px}
+.field input,.field select{width:100%;font:500 1rem "Public Sans",system-ui,sans-serif;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:10px}
+
+/* all deals */
+.filters{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px}
+.row{display:grid;grid-template-columns:1.8rem 1fr auto;gap:10px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:6px;width:100%;text-align:left;cursor:pointer}
+.rank{font:700 1rem "Bricolage Grotesque",system-ui,sans-serif;color:var(--gold);text-align:center}
+.r-meta{font-size:.8rem;color:var(--ink-soft)}
+.r-miles{text-align:right;font-weight:700;white-space:nowrap}
+.r-miles small{display:block;color:var(--save);font-size:.78rem}
+
+/* bottom bar */
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--bar);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));z-index:20}
+.bar-in{max-width:720px;margin:0 auto;display:flex;gap:8px;align-items:center}
+.bar .back{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:13px 16px;font-weight:600;cursor:pointer}
+.bar .next{flex:1;border:0;background:var(--ink);color:var(--paper);border-radius:10px;padding:13px 16px;font-weight:700;cursor:pointer;font-size:1rem}
+.bar .next.soft{background:var(--card);color:var(--ink);border:1px solid var(--line)}
+.bar .next:disabled{opacity:.4;cursor:not-allowed}
+.lock{position:fixed;inset:0;z-index:50;background:var(--paper);display:flex;align-items:center;justify-content:center;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px))}
+.lock-box{width:100%;max-width:380px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+.lock-box h2{margin:6px 0 4px}
+.lock-box input{width:100%;font:600 1.1rem "Public Sans",system-ui,sans-serif;color:var(--ink);background:var(--paper);border:2px solid var(--line);border-radius:10px;padding:12px;margin:14px 0 10px}
+.lock-box input:focus{border-color:var(--gold);outline:none}
+.lock-err{color:var(--warn);font-weight:600;font-size:.9rem;min-height:1.3em}
+body.locked .wrap,body.locked .bar{display:none!important}
+footer{margin-top:28px;font-size:.8rem;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:12px}
+@media (prefers-reduced-motion:no-preference){.anim{animation:in .22s ease-out}@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}}
+</style>
+</head>
+<body class="locked">
+<div class="lock" id="lock"><form class="lock-box" id="lockForm" autocomplete="off">
+  <span class="brand">Kris Finance</span>
+  <h2>Miles Escape Planner</h2>
+  <p class="muted">For Kris Finance clients and friends. Enter the password Kris shared with you.</p>
+  <label for="pw" class="muted" style="display:block;margin-top:10px">Password</label>
+  <input id="pw" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" style="margin-top:4px">
+  <div class="lock-err" id="pwErr" role="alert"></div>
+  <button type="submit" class="btn primary" style="width:100%;margin-top:4px">Unlock</button>
+  <a class="btn ghost" style="margin-top:8px" href="https://wa.me/6592716951?text=Hi%20Kris%2C%20may%20I%20have%20the%20password%20for%20your%20Miles%20Escape%20Planner%3F" target="_blank" rel="noopener">Don't have it? Ask Kris on WhatsApp</a>
+</form></div>
+<div class="wrap">
+  <div class="top"><span class="brand">Kris Finance</span><span class="deadline" id="deadline">Book by 31 Oct</span></div>
+  <div id="hero"><h1>Where can my miles take me in November?</h1>
+  <p class="muted" style="margin-bottom:14px">KrisFlyer Spontaneous Escapes: up to 30% fewer miles on Singapore Airlines and 15% fewer on Scoot.</p></div>
+  <div class="modes" role="tablist">
+    <button role="tab" aria-selected="true" data-mode="plan">Plan my trip</button>
+    <button role="tab" aria-selected="false" data-mode="all">See all deals</button>
+  </div>
+  <main id="app" aria-live="polite"></main>
+  <footer>
+    Prices are one-way per person after discount, checked line by line against the official singaporeair.com and flyscoot.com November 2026 lists on 16 Oct 2026. Taxes and fees are extra. Promo seats are limited and can't be changed or cancelled. Struck-out days are blackout dates with no promo price; open days still depend on seats left. "Kris's pick" marks routes Kris Finance rates as strong value. For general information only; not financial advice.<br><br>Created by Kris Finance.<br><br><button type="button" class="linkbtn" id="relock">Lock this page</button>
+  </footer>
+</div>
+<div class="bar" id="bar"><div class="bar-in">
+  <button class="back" id="bBack" type="button">Back</button>
+  <button class="next" id="bNext" type="button">Next</button>
+</div></div>
+<script>
+const RAW = [
+["Singapore","Bandar Seri Begawan","SQ","Y",8000,5600,"15, 22","SQ148"],
+["Bandar Seri Begawan","Singapore","SQ","Y",8000,5600,"9, 15, 30","SQ147"],
+["Singapore","Bali","SQ","Y",8000,5600,"5-8, 12, 13, 19-21, 24, 25","SQ944"],
+["Bali","Singapore","SQ","J",22000,15400,"1-3, 8-10, 15, 16, 19, 22, 23","SQ947"],
+["Singapore","Jakarta","SQ","J",22000,15400,"","SQ950, SQ952"],
+["Jakarta","Singapore","SQ","J",22000,15400,"","SQ951, SQ963, SQ965, SQ967"],
+["Singapore","Kuala Lumpur","SQ","Y",8000,5600,"5-7","SQ122, SQ126"],
+["Singapore","Kuala Lumpur","SQ","J",22000,15400,"5-7","SQ122, SQ126"],
+["Kuala Lumpur","Singapore","SQ","Y",8000,5600,"8-10","SQ103, SQ105"],
+["Kuala Lumpur","Singapore","SQ","J",22000,15400,"7-10","SQ105, SQ107, SQ125"],
+["Singapore","Surabaya","SQ","Y",8000,5600,"6, 7","SQ922, SQ926, SQ928"],
+["Singapore","Surabaya","SQ","J",22000,15400,"","SQ922, SQ928"],
+["Surabaya","Singapore","SQ","Y",8000,5600,"","SQ923, SQ927, SQ929"],
+["Surabaya","Singapore","SQ","J",22000,15400,"","SQ923, SQ929"],
+["Singapore","Bangkok","SQ","Y",13000,9100,"4-8, 19-21, 25-27","SQ714, SQ720"],
+["Singapore","Bangkok","SQ","J",25000,17500,"4-9, 14, 18-20, 26","SQ714"],
+["Bangkok","Singapore","SQ","Y",13000,9100,"1, 8-10, 15, 22, 28-30","SQ719"],
+["Bangkok","Singapore","SQ","J",25000,17500,"1, 8-10, 15, 25, 29, 30","SQ719"],
+["Singapore","Da Nang","SQ","Y",13000,9100,"5, 6, 21, 26","SQ174, SQ176"],
+["Singapore","Da Nang","SQ","J",25000,17500,"3-6, 11, 17, 19, 21, 24, 26, 30","SQ176"],
+["Da Nang","Singapore","SQ","Y",13000,9100,"9-11, 15, 30","SQ171, SQ173, SQ175"],
+["Da Nang","Singapore","SQ","J",25000,17500,"2-4, 6, 9, 11, 12, 17, 19, 24-26","SQ175"],
+["Hanoi","Singapore","SQ","J",25000,17500,"1-3, 6-10, 13-16, 20-23, 26-29","SQ191"],
+["Singapore","Ho Chi Minh City","SQ","Y",13000,9100,"5-7, 20","SQ186, SQ188"],
+["Singapore","Ho Chi Minh City","SQ","J",25000,17500,"6","SQ184, SQ186, SQ188"],
+["Ho Chi Minh City","Singapore","SQ","Y",13000,9100,"9, 10","SQ187"],
+["Ho Chi Minh City","Singapore","SQ","J",25000,17500,"9","SQ185, SQ187"],
+["Singapore","Manila","SQ","Y",13000,9100,"1-8, 18, 21, 25-30","SQ914, SQ916"],
+["Manila","Singapore","SQ","Y",13000,9100,"9, 15, 25","SQ917, SQ919"],
+["Manila","Singapore","SQ","J",25000,17500,"1, 4, 6, 14, 18, 22-26, 28","SQ915"],
+["Singapore","Phnom Penh","SQ","Y",13000,9100,"","SQ156, SQ158"],
+["Singapore","Phnom Penh","SQ","J",25000,17500,"3, 4, 6, 7, 10, 11, 13, 14, 18, 24, 25","SQ158"],
+["Phnom Penh","Singapore","SQ","Y",13000,9100,"20-22","SQ153, SQ157"],
+["Phnom Penh","Singapore","SQ","J",25000,17500,"3, 4, 6, 7, 10, 13, 14, 17, 18, 22, 24","SQ153, SQ157"],
+["Singapore","Phuket","SQ","Y",13000,9100,"5-7, 13, 21, 28","SQ724, SQ736, SQ740"],
+["Phuket","Singapore","SQ","Y",13000,9100,"9, 10, 15, 29","SQ723, SQ725"],
+["Singapore","Siem Reap","SQ","Y",13000,9100,"1, 2, 5-8, 13","SQ166"],
+["Siem Reap","Singapore","SQ","Y",13000,9100,"6, 9, 10, 15, 16, 18, 21, 22, 28, 29","SQ163, SQ165"],
+["Singapore","Hangzhou","SQ","Y",15500,10850,"5, 6","SQ838"],
+["Singapore","Hangzhou","SQ","J",35500,24850,"5, 6, 12, 29","SQ838"],
+["Hangzhou","Singapore","SQ","Y",15500,10850,"13, 15, 22, 29","SQ839"],
+["Hangzhou","Singapore","SQ","J",35500,24850,"2, 9","SQ839"],
+["Ahmedabad","Singapore","SQ","J",45000,31500,"4-15, 24","SQ505"],
+["Singapore","Colombo","SQ","Y",19000,13300,"","SQ468"],
+["Singapore","Colombo","SQ","J",45000,31500,"","SQ468"],
+["Colombo","Singapore","SQ","J",45000,31500,"","SQ469"],
+["Singapore","Dhaka","SQ","Y",19000,13300,"25-30","SQ446"],
+["Singapore","Dhaka","SQ","J",45000,31500,"","SQ446"],
+["Dhaka","Singapore","SQ","Y",19000,13300,"4, 5","SQ447"],
+["Dhaka","Singapore","SQ","J",45000,31500,"","SQ447"],
+["Singapore","Istanbul","SQ","Y",32000,22400,"4, 7-9, 21-23","SQ392"],
+["Singapore","Istanbul","SQ","W",51500,36050,"6-9, 14, 28-30","SQ392"],
+["Istanbul","Singapore","SQ","Y",32000,22400,"4, 13-21","SQ391"],
+["Istanbul","Singapore","SQ","W",51500,36050,"2, 4, 7, 9, 14, 21","SQ391"],
+["Singapore","Darwin","SQ","J",42500,29750,"1-9","SQ251, SQ253"],
+["Singapore","Adelaide","SQ","Y",29000,20300,"2-4, 6, 7, 9-11, 13, 14, 16-18, 20, 21, 23-25, 27, 28","SQ279"],
+["Adelaide","Singapore","SQ","Y",29000,20300,"1, 3-5, 7, 8, 10-12, 14, 15, 17-19, 21-30","SQ278"],
+["Singapore","Brisbane","SQ","Y",29000,20300,"1-8, 20-22","SQ265, SQ255"],
+["Singapore","Brisbane","SQ","W",53500,37450,"1-15, 19-22, 27-30","SQ265"],
+["Singapore","Cairns","SQ","Y",29000,20300,"1-8","SQ203"],
+["Singapore","Cairns","SQ","J",72000,50400,"1-8","SQ203"],
+["Cairns","Singapore","SQ","Y",29000,20300,"1-4, 20-30","SQ204"],
+["Cairns","Singapore","SQ","J",72000,50400,"24-30","SQ204"],
+["Singapore","Melbourne","SQ","Y",29000,20300,"1-8, 14, 15, 21, 22, 27-29","SQ237"],
+["Singapore","Sydney","SQ","Y",29000,20300,"1-8, 14, 15, 21, 22, 28, 29","SQ231"],
+["Amsterdam","Singapore","SQ","Y",44000,30800,"1-12, 14, 21, 22, 28, 29","SQ323"],
+["Singapore","Brussels","SQ","Y",44000,30800,"1-9, 13-15, 22, 27, 29","SQ304"],
+["Singapore","Brussels","SQ","W",74500,52150,"1, 6, 15, 20-30","SQ304"],
+["Brussels","Singapore","SQ","Y",44000,30800,"14, 28","SQ303"],
+["Brussels","Singapore","SQ","W",74500,52150,"2, 7, 14-16","SQ303"],
+["Singapore","Copenhagen","SQ","Y",44000,30800,"1, 2, 6-8, 14, 15, 20-30","SQ352"],
+["Singapore","Copenhagen","SQ","W",74500,52150,"1, 5-7, 14-30","SQ352"],
+["Copenhagen","Singapore","SQ","Y",44000,30800,"1, 6, 7, 14, 21","SQ351"],
+["Copenhagen","Singapore","SQ","W",74500,52150,"1, 2, 5-9, 14, 15, 18, 21, 28, 30","SQ351"],
+["Singapore","Frankfurt","SQ","Y",44000,30800,"7, 8, 21, 22, 28-30","SQ326, SQ330"],
+["Singapore","Frankfurt","SQ","W",74500,52150,"20-22, 27-30","SQ326, SQ330"],
+["Frankfurt","Singapore","SQ","Y",44000,30800,"6, 7","SQ25, SQ329"],
+["Frankfurt","Singapore","SQ","W",74500,52150,"1, 2, 6, 7, 13-15, 20, 21","SQ25, SQ329"],
+["Singapore","London Gatwick","SQ","Y",44000,30800,"1, 2, 15, 22, 28, 29","SQ314"],
+["London Gatwick","Singapore","SQ","Y",44000,30800,"6, 7, 14, 28","SQ313"],
+["Singapore","London Heathrow","SQ","Y",44000,30800,"1, 7, 21, 28, 29","SQ308, SQ318"],
+["London Heathrow","Singapore","SQ","Y",44000,30800,"1, 5-7, 14, 21","SQ305, SQ317"],
+["Singapore","Milan","SQ","Y",44000,30800,"7, 21-30","SQ356"],
+["Singapore","Milan","SQ","W",74500,52150,"1, 2, 7, 8, 13, 14, 21-30","SQ356"],
+["Milan","Singapore","SQ","Y",44000,30800,"1-3, 7-9, 14, 21, 28","SQ355"],
+["Milan","Singapore","SQ","W",74500,52150,"1-9, 13-22","SQ355"],
+["Singapore","Munich","SQ","Y",44000,30800,"7, 8, 14, 15, 21, 22, 28-30","SQ328, SQ368"],
+["Singapore","Munich","SQ","W",74500,52150,"27, 30","SQ368"],
+["Munich","Singapore","SQ","Y",44000,30800,"7, 8, 14, 15, 21, 22, 28, 29","SQ327, SQ367"],
+["Singapore","Paris","SQ","Y",44000,30800,"15, 21, 22, 26, 28, 29","SQ338"],
+["Singapore","Paris","SQ","W",74500,52150,"14, 28, 29","SQ338"],
+["Paris","Singapore","SQ","Y",44000,30800,"1-7, 12, 14, 15, 18, 19","SQ335, SQ337"],
+["Paris","Singapore","SQ","W",74500,52150,"1-15","SQ335, SQ337"],
+["Singapore","Rome","SQ","Y",44000,30800,"1, 6, 15, 22, 27, 28","SQ366"],
+["Rome","Singapore","SQ","Y",44000,30800,"1-15","SQ365"],
+["Singapore","Zurich","SQ","Y",44000,30800,"7, 8, 14, 15, 20-30","SQ346"],
+["Zurich","Singapore","SQ","Y",44000,30800,"1-3, 28, 29","SQ345"],
+["Singapore","Los Angeles","SQ","Y",44000,30800,"1, 2, 12-19, 23, 26-30","SQ36, SQ38"],
+["Los Angeles","Singapore","SQ","Y",44000,30800,"1-3, 5-7, 9-14, 18-21","SQ35, SQ37"],
+["Singapore","San Francisco","SQ","Y",44000,30800,"1, 2, 7, 8, 14-19, 26-30","SQ32"],
+["Singapore","San Francisco","SQ","W",79000,55300,"1, 14-16, 26-30","SQ34"],
+["San Francisco","Singapore","SQ","Y",44000,30800,"1, 2, 6-22","SQ31"],
+["Singapore","Seattle","SQ","Y",44000,30800,"27-29","SQ28"],
+["Seattle","Singapore","SQ","Y",44000,30800,"11, 14, 20, 21","SQ27"],
+["Frankfurt","New York","SQ","Y",27500,19250,"1-3, 25-27, 29, 30","SQ26"],
+["Frankfurt","New York","SQ","W",57000,39900,"28, 29","SQ26"],
+["New York","Frankfurt","SQ","W",57000,39900,"","SQ25"],
+// Scoot (economy only)
+["Singapore","Melbourne","TR","Y",12500,10625,"1-8, 18-22","TR58"],
+["Singapore","Perth","TR","Y",6500,5525,"1-7, 18-22","TR52"],
+["Singapore","Vienna","TR","Y",24000,20400,"26-29","All"],
+["Vienna","Singapore","TR","Y",24000,20400,"1-19","All"],
+["Singapore","Athens","TR","Y",24000,20400,"","All"],
+["Singapore","Changsha","TR","Y",12000,10200,"20-29","All"],
+["Singapore","Nanjing","TR","Y",12000,10200,"19-30","All"],
+["Nanjing","Singapore","TR","Y",12000,10200,"","All"],
+["Singapore","Nanning","TR","Y",6500,5525,"21-30","All"],
+["Nanning","Singapore","TR","Y",6500,5525,"9","All"],
+["Singapore","Qingdao","TR","Y",12000,10200,"","All"],
+["Qingdao","Singapore","TR","Y",12000,10200,"","All"],
+["Singapore","Shenyang","TR","Y",12000,10200,"20-29","All"],
+["Shenyang","Singapore","TR","Y",12000,10200,"","All"],
+["Singapore","Tianjin","TR","Y",12000,10200,"26-30","All"],
+["Tianjin","Singapore","TR","Y",12000,10200,"","All"],
+["Singapore","Wuhan","TR","Y",12000,10200,"7-8, 19-30","All"],
+["Wuhan","Singapore","TR","Y",12000,10200,"8-9","All"],
+["Singapore","Zhengzhou","TR","Y",12000,10200,"","All"],
+["Guiyang","Singapore","TR","Y",12000,10200,"9-11, 18-23","All"],
+["Hangzhou","Singapore","TR","Y",12000,10200,"9-15","All"],
+["Singapore","Bali","TR","Y",4500,3825,"5-8, 18-22","All"],
+["Bali","Singapore","TR","Y",4500,3825,"8-10, 27-30","TR281"],
+["Singapore","Balikpapan","TR","Y",4500,3825,"3-7, 23-27","All"],
+["Balikpapan","Singapore","TR","Y",4500,3825,"3, 17","TR223"],
+["Singapore","Belitung","TR","Y",2500,2125,"8-11","All"],
+["Belitung","Singapore","TR","Y",2500,2125,"11","All"],
+["Singapore","Makassar","TR","Y",4500,3825,"3-5, 17-23","All"],
+["Makassar","Singapore","TR","Y",4500,3825,"1-17, 30","All"],
+["Singapore","Manado","TR","Y",4500,3825,"1-7","TR216"],
+["Singapore","Medan","TR","Y",4500,3825,"3-6, 20-24","All"],
+["Medan","Singapore","TR","Y",4500,3825,"1-2, 8-15","All"],
+["Singapore","Padang","TR","Y",2500,2125,"3, 17-23","All"],
+["Padang","Singapore","TR","Y",2500,2125,"1-14","All"],
+["Singapore","Palembang","TR","Y",4500,3825,"3","All"],
+["Palembang","Singapore","TR","Y",4500,3825,"26","All"],
+["Singapore","Pekanbaru","TR","Y",2500,2125,"7-8, 12, 16-19","All"],
+["Pekanbaru","Singapore","TR","Y",2500,2125,"2-14, 20-21","All"],
+["Singapore","Pontianak","TR","Y",4500,3825,"25","All"],
+["Pontianak","Singapore","TR","Y",4500,3825,"9, 30","All"],
+["Singapore","Semarang","TR","Y",4500,3825,"7, 14, 21, 28","TR200"],
+["Singapore","Yogyakarta","TR","Y",4500,3825,"1-9, 20-30","All"],
+["Yogyakarta","Singapore","TR","Y",4500,3825,"1-12, 23-25","All"],
+["Singapore","Ipoh","TR","Y",1500,1275,"20-30","TR480"],
+["Singapore","Kota Bharu","TR","Y",1500,1275,"","All"],
+["Singapore","Kuala Lumpur","TR","Y",1500,1275,"5-7, 19-30","All"],
+["Singapore","Kuantan","TR","Y",1500,1275,"6","All"],
+["Singapore","Kuching","TR","Y",2000,1700,"5-7, 19-30","All"],
+["Singapore","Langkawi","TR","Y",1500,1275,"5-7, 19-30","All"],
+["Singapore","Malacca","TR","Y",1500,1275,"20-30","All"],
+["Malacca","Singapore","TR","Y",1500,1275,"22-30","All"],
+["Singapore","Penang","TR","Y",1500,1275,"5-7, 20-30","All"],
+["Penang","Singapore","TR","Y",1500,1275,"8-10, 22-30","All"],
+["Taipei","Singapore","TR","Y",6500,5525,"8-11, 23-30","TR873, TR875, TR893"],
+["Singapore","Koh Samui","TR","Y",10500,8925,"5-7, 20-22","All"],
+["Koh Samui","Singapore","TR","Y",10500,8925,"8-10, 28-30","All"],
+["Singapore","Da Nang","TR","Y",4500,3825,"20-30","All"],
+["Singapore","Nha Trang","TR","Y",6000,5100,"26-30","All"],
+["Nha Trang","Singapore","TR","Y",6000,5100,"","All"]
+];
+const HRS = {"Bandar Seri Begawan":2.2,"Bali":2.5,"Jakarta":1.8,"Kuala Lumpur":1,"Surabaya":2.2,"Bangkok":2.4,"Da Nang":2.6,"Hanoi":3.2,"Ho Chi Minh City":2,"Manila":3.3,"Phnom Penh":2,"Phuket":1.8,"Siem Reap":2.2,"Hangzhou":5,"Ahmedabad":5,"Colombo":3.7,"Dhaka":4,"Istanbul":12,"Darwin":4.5,"Adelaide":6.5,"Brisbane":7.5,"Cairns":6,"Melbourne":7.5,"Sydney":7.8,"Amsterdam":13.5,"Brussels":13.5,"Copenhagen":13,"Frankfurt":12.5,"London Gatwick":14,"London Heathrow":14,"Milan":12.5,"Munich":12.5,"Paris":13.5,"Rome":12.5,"Zurich":12.5,"Los Angeles":15.5,"San Francisco":15.5,"Seattle":15.5,"New York":9,"Perth":5,"Vienna":12.5,"Athens":11.5,"Changsha":4.5,"Nanjing":5.5,"Nanning":3.5,"Qingdao":6,"Shenyang":6.5,"Tianjin":6,"Wuhan":4.8,"Zhengzhou":5.2,"Guiyang":4,"Balikpapan":2.3,"Belitung":1,"Makassar":2.7,"Manado":3.5,"Medan":1.6,"Padang":1.3,"Palembang":1.2,"Pekanbaru":1.2,"Pontianak":1.4,"Semarang":2,"Yogyakarta":2.2,"Ipoh":1.3,"Kota Bharu":1.3,"Kuantan":1,"Kuching":1.4,"Langkawi":1.5,"Malacca":0.9,"Penang":1.5,"Taipei":4.6,"Koh Samui":1.8,"Nha Trang":2.4};
+const PICKS = new Set(["Istanbul|W","Darwin|J","Cairns|J","Colombo|J","Dhaka|J","Ahmedabad|J","Hangzhou|J","San Francisco|W","Paris|W","Frankfurt|W","Munich|W","Bali|J","Bali|Y","Bangkok|J","Da Nang|J","Ho Chi Minh City|J","Hanoi|J","Brisbane|W","Kuching|Y","Belitung|Y","Perth|Y","Taipei|Y","Melbourne|Y","Nanning|Y","Kuala Lumpur|Y","Penang|Y","Vienna|Y","Athens|Y"]);
+const CITY={"Kuala Lumpur":["MI","Malaysia","kl kul"],"Penang":["MI","Malaysia","pen georgetown"],"Langkawi":["MI","Malaysia","lgk"],"Ipoh":["MI","Malaysia","iph"],"Kota Bharu":["MI","Malaysia","kbr kelantan"],"Kuantan":["MI","Malaysia","kua pahang"],"Kuching":["MI","Malaysia","kch sarawak"],"Malacca":["MI","Malaysia","melaka mkz"],"Bali":["MI","Indonesia","denpasar dps"],"Jakarta":["MI","Indonesia","cgk"],"Surabaya":["MI","Indonesia","sub"],"Balikpapan":["MI","Indonesia","bpn"],"Belitung":["MI","Indonesia","tanjung pandan tjq"],"Makassar":["MI","Indonesia","upg ujung pandang"],"Manado":["MI","Indonesia","mdc"],"Medan":["MI","Indonesia","kno"],"Padang":["MI","Indonesia","pdg"],"Palembang":["MI","Indonesia","plm"],"Pekanbaru":["MI","Indonesia","pku"],"Pontianak":["MI","Indonesia","pnk"],"Semarang":["MI","Indonesia","srg"],"Yogyakarta":["MI","Indonesia","jogja yia"],"Bandar Seri Begawan":["SEA","Brunei","bwn brunei"],"Bangkok":["SEA","Thailand","bkk"],"Phuket":["SEA","Thailand","hkt"],"Koh Samui":["SEA","Thailand","samui usm"],"Da Nang":["SEA","Vietnam","danang dad"],"Hanoi":["SEA","Vietnam","han"],"Ho Chi Minh City":["SEA","Vietnam","saigon hcmc sgn"],"Nha Trang":["SEA","Vietnam","cam ranh cxr"],"Manila":["SEA","Philippines","mnl"],"Phnom Penh":["SEA","Cambodia","pnh"],"Siem Reap":["SEA","Cambodia","rep angkor"],"Hangzhou":["CN","China","hgh"],"Changsha":["CN","China","csx"],"Nanjing":["CN","China","nkg"],"Nanning":["CN","China","nng"],"Qingdao":["CN","China","tao"],"Shenyang":["CN","China","she"],"Tianjin":["CN","China","tsn"],"Wuhan":["CN","China","wuh"],"Zhengzhou":["CN","China","cgo"],"Guiyang":["CN","China","kwe"],"Taipei":["CN","Taiwan","tpe"],"Ahmedabad":["SA","India","amd"],"Colombo":["SA","Sri Lanka","cmb"],"Dhaka":["SA","Bangladesh","dac"],"Istanbul":["SA","Türkiye","turkey ist"],"Darwin":["AU","Australia","drw"],"Adelaide":["AU","Australia","adl"],"Brisbane":["AU","Australia","bne"],"Cairns":["AU","Australia","cns"],"Melbourne":["AU","Australia","mel"],"Sydney":["AU","Australia","syd"],"Perth":["AU","Australia","per"],"Amsterdam":["EU","Netherlands","ams"],"Brussels":["EU","Belgium","bru"],"Copenhagen":["EU","Denmark","cph"],"Frankfurt":["EU","Germany","fra"],"London Gatwick":["EU","United Kingdom","london lgw uk"],"London Heathrow":["EU","United Kingdom","london lhr uk"],"Milan":["EU","Italy","mxp"],"Munich":["EU","Germany","muc"],"Paris":["EU","France","cdg"],"Rome":["EU","Italy","fco"],"Zurich":["EU","Switzerland","zrh"],"Vienna":["EU","Austria","vie"],"Athens":["EU","Greece","ath"],"Los Angeles":["US","USA","la lax"],"San Francisco":["US","USA","sf sfo"],"Seattle":["US","USA","sea"]};
+const REGIONS=[["all","All"],["MI","Malaysia & Indonesia"],["SEA","Thailand, Vietnam & more"],["CN","China & Taiwan"],["SA","South Asia & Türkiye"],["AU","Australia"],["EU","Europe"],["US","USA"]];
+const CAB={Y:"Economy",W:"Premium Economy",J:"Business"};
+const SIA_URL="https://www.singaporeair.com/en_UK/sg/ppsclub-krisflyer/krisflyer-spontaneous-escapes/";
+const TR_URL="https://www.flyscoot.com/en/krisflyer/spontaneous-escapes";
+const KRIS_WA="6592716951";
+
+function parseDays(s){const o=new Set();(s||"").split(",").forEach(p=>{p=p.trim();if(!p)return;const m=p.split("-").map(n=>parseInt(n,10));if(m.length===2){for(let d=m[0];d<=m[1];d++)o.add(d)}else o.add(m[0])});return o}
+const DEALS=RAW.map((r,i)=>{const[from,to,op,cabin,reg,promo,bo,fl]=r;const other=from==="Singapore"?to:from;const black=parseDays(bo);return{id:i,from,to,op,cabin,reg,promo,fl,other,hrs:HRS[other]||null,black,open:30-black.size,pick:PICKS.has(other+"|"+cabin),sinRoute:from==="Singapore"||to==="Singapore"}});
+const DESTS=Object.keys(CITY).filter(c=>DEALS.some(d=>d.sinRoute&&d.other===c)).map(c=>{const ds=DEALS.filter(d=>d.sinRoute&&d.other===c);return{name:c,region:CITY[c][0],country:CITY[c][1],alias:CITY[c][2],min:Math.min(...ds.map(d=>d.promo)),ops:[...new Set(ds.map(d=>d.op))],cabs:[...new Set(ds.map(d=>d.cabin))],pick:ds.some(d=>d.pick)}}).sort((a,b)=>a.min-b.min);
+
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString("en-SG");
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const opName=op=>op==="SQ"?"Singapore Airlines":"Scoot";
+const opTag=op=>op==="SQ"?'<span class="tag sq">SIA</span>':'<span class="tag tr">Scoot</span>';
+const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const dayLabel=d=>`${DOW[new Date(2026,10,d).getDay()]} ${d} Nov`;
+
+const S={mode:"plan",step:1,city:null,dir:"out",trip:"rt",pax:1,cabin:"any",out:0,back:0,bal:20000,q:"",region:"all",sel:null,sort:"saved",fop:"all",fit:"fit",fcab:"any",shown:15};
+try{const b=localStorage.getItem("kf_bal");if(b!==null)S.bal=+b||0;const p=localStorage.getItem("kf_pax");if(p)S.pax=Math.min(9,Math.max(1,+p))}catch(e){}
+function save(){try{localStorage.setItem("kf_bal",S.bal);localStorage.setItem("kf_pax",S.pax)}catch(e){}}
+
+const A=()=>S.dir==="out"?"Singapore":S.city, B=()=>S.dir==="out"?S.city:"Singapore";
+const cabOK=d=>S.cabin==="any"||d.cabin===S.cabin;
+function legs(a,b,day){return DEALS.filter(d=>d.from===a&&d.to===b&&cabOK(d)&&!(day&&d.black.has(day)))}
+function hasDir(a,b){return DEALS.some(d=>d.from===a&&d.to===b&&cabOK(d))}
+function routeCabins(){const c=S.city;return ["Y","W","J"].filter(k=>DEALS.some(d=>d.other===c&&d.sinRoute&&d.cabin===k))}
+
+function options(){
+  const a=A(),b=B(),pax=S.pax,outs=legs(a,b,S.out),opts=[];
+  if(S.trip==="ow"){outs.forEach(o=>opts.push({out:o,total:o.promo*pax,saved:(o.reg-o.promo)*pax}))}
+  else{
+    const rets=legs(b,a,S.back);
+    const outL=outs.length?outs.map(o=>({d:o})):(!hasDir(a,b)?legs(b,a,0).map(r=>({e:{op:r.op,cabin:r.cabin,miles:r.reg}})):[]);
+    const retL=rets.map(r=>({d:r}));
+    if(!hasDir(b,a)||true){outs.forEach(o=>{if(!rets.some(r=>r.op===o.op&&r.cabin===o.cabin)&&!(hasDir(b,a)&&legs(b,a,0).some(r=>r.op===o.op&&r.cabin===o.cabin)))retL.push({e:{op:o.op,cabin:o.cabin,miles:o.reg}})})}
+    const m=x=>x.d?x.d.promo:x.e.miles,rg=x=>x.d?x.d.reg:x.e.miles;
+    const seen=new Set();
+    outL.forEach(o=>retL.forEach(r=>{if(o.e&&r.e)return;const k=JSON.stringify([o.d?o.d.id:o.e,r.d?r.d.id:r.e]);if(seen.has(k))return;seen.add(k);
+      opts.push({out:o.d,outE:o.e,ret:r.d,retE:r.e,total:(m(o)+m(r))*pax,saved:((rg(o)-m(o))+(rg(r)-m(r)))*pax})}));
+  }
+  opts.sort((x,y)=>x.total-y.total||y.saved-x.saved);
+  opts.forEach(o=>o.k=[o.out?o.out.id:"e"+(o.outE?o.outE.op+o.outE.cabin:""),o.ret?o.ret.id:(o.retE?"e"+o.retE.op+o.retE.cabin:"-")].join("_"));
+  return opts;
+}
+function dayState(a,b,d){if(!hasDir(a,b))return"free";return legs(a,b,d).length?"ok":"no"}
+
+/* ---------- screens ---------- */
+function progress(){return `<div class="progress">${[1,2,3,4].map(i=>`<i class="${i<=S.step?"on":""}"></i>`).join("")}</div><div class="stepno">Step ${S.step} of 4</div>`}
+
+function step1(){
+  const q=S.q.trim().toLowerCase();
+  const list=DESTS.filter(d=>(S.region==="all"||d.region===S.region)&&(!q||(d.name+" "+d.country+" "+d.alias).toLowerCase().includes(q)));
+  return `<section class="screen">${progress()}<h2>Where do you want to go?</h2><p class="muted">Tap a city. Prices are the cheapest one-way seat.</p>
+  <div class="search"><input id="q" type="search" placeholder="Type a city, country or code, e.g. KL" value="${esc(S.q)}" autocomplete="off" aria-label="Search destinations">${S.q?'<button class="clear" id="qClear" type="button" aria-label="Clear search">✕</button>':""}</div>
+  <div class="regions">${REGIONS.map(([k,v])=>`<button type="button" data-r="${k}" aria-pressed="${S.region===k}">${v}</button>`).join("")}</div>
+  ${list.length?`<div class="dests">${list.map(d=>`<button type="button" class="dest" data-city="${esc(d.name)}" aria-pressed="${S.city===d.name}">
+    <span class="nm">${esc(d.name)} ${d.pick?'<span class="star">★ Kris\'s pick</span>':""}</span><span class="ct">${esc(d.country)} · ${d.ops.map(o=>o==="SQ"?"SIA":"Scoot").join(" & ")}</span>
+    <span class="fr">from <b>${fmt(d.min)}</b> miles</span></button>`).join("")}</div>`
+  :`<div class="noresult"><b>No November deals match “${esc(S.q)}”.</b><p class="muted">Check the spelling, try the country name, or tap “All”.</p></div>`}</section>`;
+}
+
+function calendar(id,a,b,sel,minDay){
+  const first=new Date(2026,10,1).getDay();let cells="";for(let i=0;i<first;i++)cells+="<span></span>";
+  for(let d=1;d<=30;d++){const st=minDay&&d<minDay?"na":dayState(a,b,d);const dis=st==="na"||st==="no";
+    cells+=`<button type="button" class="${st==="ok"?"":st}" data-cal="${id}" data-d="${d}" aria-pressed="${sel===d}" ${dis?"disabled":""} aria-label="${dayLabel(d)}${st==="no"?", no promo seats":""}">${d}</button>`}
+  const free=!hasDir(a,b);
+  return `<div class="cal-wrap"><div class="cal-head">${DOW.map(x=>`<span>${x[0]}</span>`).join("")}</div><div class="cal">${cells}</div>
+  <div class="legend">${free?"":'<span><i style="background:var(--save-wash);border:1px solid var(--save)"></i>Promo price available</span><span><i style="background:var(--chip)"></i>No promo that day</span>'}</div>
+  ${free?`<div class="hint">${esc(a)} → ${esc(b)} isn't on promo this month, so this leg costs the regular Saver price. Pick any day.</div>`:""}
+  ${sel?`<button type="button" class="linkbtn" data-clear="${id}">Clear this date</button>`:""}</div>`;
+}
+
+function step2(){
+  const c=S.city,cabs=routeCabins();
+  return `<section class="screen">${progress()}<h2>Your trip to ${esc(c)}</h2>
+  <h3>Return or one-way?</h3><div class="big2">
+    <button type="button" class="bigbtn" data-trip="rt" aria-pressed="${S.trip==="rt"}"><b>Return</b><span>There and back</span></button>
+    <button type="button" class="bigbtn" data-trip="ow" aria-pressed="${S.trip==="ow"}"><b>One-way</b><span>Just one direction</span></button></div>
+  <h3>Starting from</h3><div class="big2">
+    <button type="button" class="bigbtn" data-dir="out" aria-pressed="${S.dir==="out"}"><b>Singapore</b><span>Most people pick this</span></button>
+    <button type="button" class="bigbtn" data-dir="in" aria-pressed="${S.dir==="in"}"><b>${esc(c)}</b><span>Already there</span></button></div>
+  <h3>How many travellers?</h3>
+  <div class="stepper"><button type="button" data-pax="-1" ${S.pax<=1?"disabled":""} aria-label="Fewer travellers">−</button><output>${S.pax} ${S.pax>1?"people":"person"}</output><button type="button" data-pax="1" ${S.pax>=9?"disabled":""} aria-label="More travellers">+</button></div>
+  <h3>Cabin</h3><div class="cabins"><button type="button" class="pill" data-cab="any" aria-pressed="${S.cabin==="any"}">Cheapest</button>${cabs.map(k=>`<button type="button" class="pill" data-cab="${k}" aria-pressed="${S.cabin===k}">${CAB[k]}</button>`).join("")}</div>
+  <h3>When do you fly ${S.dir==="out"?"out":"to Singapore"}? <span class="muted" style="font-weight:400">(optional)</span></h3>
+  ${calendar("out",A(),B(),S.out,0)}
+  ${S.trip==="rt"?`<h3>When do you fly back? <span class="muted" style="font-weight:400">(optional)</span></h3>${calendar("back",B(),A(),S.back,S.out)}`:""}
+  <div class="hint">Not sure of dates yet? Skip them. We'll show how many days are open.</div></section>`;
+}
+
+function step3(){
+  return `<section class="screen">${progress()}<h2>How many KrisFlyer miles do you have?</h2>
+  <p class="muted">A rough number is fine.</p>
+  <div class="miles" style="margin-top:12px"><input id="bal" type="text" inputmode="numeric" value="${fmt(S.bal)}" aria-label="KrisFlyer miles balance"></div>
+  <div class="presets">${[-5000,5000].map(v=>`<button type="button" class="pill" data-add="${v}">${v>0?"+":"−"}${fmt(Math.abs(v))}</button>`).join("")}${[10000,25000,50000,100000].map(v=>`<button type="button" class="pill" data-set="${v}" aria-pressed="${S.bal===v}">${fmt(v)}</button>`).join("")}</div>
+  <div class="hint"><b>Where to find it:</b> open the SingaporeAir or KrisFlyer app; your balance is on the home screen.<br>Booking for family? You can use your miles for them if they're on your KrisFlyer redemption nominee list.</div></section>`;
+}
+
+function legBlock(label,d,e,day){
+  if(e){const fr=label==="Out"?A():B(),to=label==="Out"?B():A();return `<div class="leg"><div class="lb">${label}</div><div><div class="rt">${esc(fr)} → ${esc(to)}</div><div class="dt">${opTag(e.op)} ${CAB[e.cabin]} · ~${fmt(e.miles)} miles</div><div class="dt"><span class="tag est">Not on promo</span> Regular Saver price. Check seats before booking the promo leg.${day?` · ${dayLabel(day)}`:""}</div></div></div>`}
+  return `<div class="leg"><div class="lb">${label}</div><div><div class="rt">${esc(d.from)} → ${esc(d.to)}</div>
+  <div class="dt">${opTag(d.op)} ${CAB[d.cabin]} · <span class="strike">${fmt(d.reg)}</span> <b style="color:var(--ink)">${fmt(d.promo)}</b> miles</div>
+  <div class="dt">${day?`<b style="color:var(--save)">${dayLabel(day)} ✓ promo open</b>`:`Promo open on ${d.open} of 30 days`} · ${d.fl==="All"?"all flights":esc(d.fl)}</div></div></div>`;
+}
+function legTxt(d,e){return d?`${d.from} → ${d.to}, ${opName(d.op)} ${CAB[d.cabin]}, ${fmt(d.promo)} miles (usually ${fmt(d.reg)})`:`${opName(e.op)} ${CAB[e.cabin]}, ~${fmt(e.miles)} miles (regular Saver)`}
+function shareText(o){return `✈️ KrisFlyer Spontaneous Escapes, Nov 2026\nOut: ${legTxt(o.out,o.outE)}${S.out?` on ${dayLabel(S.out)}`:""}${S.trip==="rt"?`\nBack: ${legTxt(o.ret,o.retE)}${S.back?` on ${dayLabel(S.back)}`:""}`:""}\nTotal: ${fmt(o.total)} miles${S.pax>1?` for ${S.pax}`:""} + taxes\nBook by 31 Oct 2026\n\nPlanned with Kris Finance`}
+
+function step4(){
+  const opts=options(),c=S.city;
+  const edit=`<div class="editbar"><button type="button" data-go="1">${esc(A())} → ${esc(B())}</button><button type="button" data-go="2">${S.trip==="rt"?"Return":"One-way"} · ${S.pax} ${S.pax>1?"people":"person"} · ${S.cabin==="any"?"Cheapest cabin":CAB[S.cabin]}</button><button type="button" data-go="2">${S.out?dayLabel(S.out)+(S.trip==="rt"&&S.back?" – "+dayLabel(S.back):""):"Any dates"}</button><button type="button" data-go="3">${fmt(S.bal)} miles</button></div>`;
+  if(!opts.length){
+    return `<section class="screen">${progress()}${edit}<div class="noresult"><h2>No promo seats match that</h2><p class="muted">Try one of these fixes:</p><div class="presets">
+    ${S.cabin!=="any"?'<button type="button" class="pill" data-fix="cabin">Any cabin</button>':""}${S.out||S.back?'<button type="button" class="pill" data-fix="dates">Clear dates</button>':""}${S.trip==="rt"?'<button type="button" class="pill" data-fix="ow">Make it one-way</button>':'<button type="button" class="pill" data-fix="rt">Make it return</button>'}<button type="button" class="pill" data-fix="dir">Swap direction</button></div></div></section>`;
+  }
+  const fits=opts.filter(o=>o.total<=S.bal);
+  if(!S.sel||!opts.some(o=>o.k===S.sel))S.sel=(fits[0]||opts[0]).k;
+  const o=opts.find(x=>x.k===S.sel),gap=o.total-S.bal,isBest=o.k===(fits[0]||opts[0]).k;
+  const ops=[...new Set([o.out,o.ret].filter(Boolean).map(d=>d.op))];
+  const badge=gap<=0?(isBest?'<span class="badge">Best option for you</span>':'<span class="badge">You can afford this</span>'):'<span class="badge short">Not enough miles yet</span>';
+  let h=`<section class="screen">${progress()}${edit}
+  <div class="ticket"><div class="t-main">${badge}<div class="t-total">${fmt(o.total)} <small>miles ${S.trip==="rt"?"return":"one-way"}${S.pax>1?` for ${S.pax}`:""} + taxes</small></div>
+  <div class="t-verdict" style="color:${gap<=0?"var(--save)":"var(--warn)"}">${gap<=0?`✓ You have enough. ${fmt(-gap)} miles left after booking.`:`You need ${fmt(gap)} more miles.`}</div>
+  ${o.saved>0?`<div class="muted">That's ${fmt(o.saved)} miles less than usual.</div>`:""}</div>
+  <div class="perf" aria-hidden="true"></div><div class="t-legs">${legBlock("Out",o.out,o.outE,S.out)}${S.trip==="rt"?legBlock("Back",o.ret,o.retE,S.back):""}</div>
+  <div class="cta">${ops.map(op=>`<a class="btn primary" href="${op==="SQ"?SIA_URL:TR_URL}" target="_blank" rel="noopener">Book on ${op==="SQ"?"singaporeair.com":"flyscoot.com"}</a>`).join("")}
+  <a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(shareText(o))}" target="_blank" rel="noopener">Share on WhatsApp</a>
+  <a class="btn ghost" href="https://wa.me/${KRIS_WA}?text=${encodeURIComponent("Hi Kris, can you help me with this miles trip?\n\n"+shareText(o))}" target="_blank" rel="noopener">Ask Kris about this trip</a></div></div>`;
+
+  if(gap>0){
+    const alt=fits[0];
+    h+=`<div class="callout bad"><h3 style="margin-top:0">How to close the ${fmt(gap)}-mile gap</h3><ol class="steps">
+    ${alt?`<li><b>Pick a cheaper way:</b> <button type="button" class="linkbtn" data-sel="${alt.k}">${fmt(alt.total)} miles, which you can afford</button></li>`:""}
+    <li><b>Move points from your credit cards</b> to KrisFlyer. It can take 1–14 working days, so do it today.</li>
+    <li><b>Shangri-La Circle points</b> convert at a 30% bonus until 31 Oct (1,000 points → 1,625 miles).</li>
+    ${S.trip==="rt"?'<li><b>Use miles one way only</b> and pay cash for the other flight. <button type="button" class="linkbtn" data-fix="ow">Show one-way</button></li>':""}</ol></div>
+    <details><summary>How long to earn it from spending?</summary><div class="dbody">
+    <div class="grid2"><div class="field"><label for="s4">Monthly spend on 4 mpd cards (S$)</label><input id="s4" type="number" min="0" step="100" value="1000"></div>
+    <div class="field"><label for="sg">Other monthly spend (S$)</label><input id="sg" type="number" min="0" step="100" value="1000"></div>
+    <div class="field"><label for="mg">Miles per S$ on other spend</label><input id="mg" type="number" min="0" step="0.1" value="1.2"></div></div><div id="earn"></div>
+    <p class="muted">New spend won't credit before 31 Oct, so this is for a future month's deals.</p></div></details>`;
+  } else {
+    const up=opts.find(x=>x.k!==o.k&&x.total<=S.bal&&[x.out,x.ret].some(d=>d&&d.cabin==="J")&&![o.out,o.ret].some(d=>d&&d.cabin==="J"));
+    if(up)h+=`<div class="callout good"><b>Upgrade idea:</b> you can afford Business for ${fmt(up.total-o.total)} more miles. <button type="button" class="linkbtn" data-sel="${up.k}">See it</button></div>`;
+  }
+  h+=`<div class="callout"><h3 style="margin-top:0">How to book (takes 5 minutes)</h3><ol class="steps">
+  <li>Log in to your KrisFlyer account on ${ops.includes("TR")&&!ops.includes("SQ")?"flyscoot.com or the Scoot app":"singaporeair.com or the SingaporeAir app"}.</li>
+  <li>Choose <b>Redeem flights</b> and search ${esc(A())} → ${esc(B())}${S.out?` on ${dayLabel(S.out)}`:""}.</li>
+  <li>Pick the fare marked <b>Promo</b>. If you don't see it, those seats are gone; try a nearby date.</li>
+  <li>Pay the taxes and finish in the same session. Promo tickets can't be changed or refunded.</li></ol>
+  ${ops.length>1?'<p class="muted">Your trip mixes airlines, so book the SIA and Scoot legs separately on each website.</p>':""}</div>`;
+  if(opts.length>1)h+=`<details><summary>Other ways to fly this (${opts.length-1})</summary><div class="dbody">${opts.filter(x=>x.k!==o.k).slice(0,10).map(x=>`<button type="button" class="alt" data-sel="${x.k}"><span>${[x.out?`${x.out.op==="SQ"?"SIA":"Scoot"} ${CAB[x.out.cabin]} out`:`${x.outE.op==="SQ"?"SIA":"Scoot"} ${CAB[x.outE.cabin]} out (regular price)`,S.trip==="rt"?(x.ret?`${x.ret.op==="SQ"?"SIA":"Scoot"} ${CAB[x.ret.cabin]} back`:`${x.retE.op==="SQ"?"SIA":"Scoot"} ${CAB[x.retE.cabin]} back (regular price)`):""].filter(Boolean).join(" + ")}${x.total>S.bal?' <span class="tag est">over budget</span>':""}</span><b>${fmt(x.total)}</b></button>`).join("")}</div></details>`;
+  h+=`<details><summary>Is using miles worth it here?</summary><div class="dbody"><p class="muted">Look up the cash price for the same flights and compare.</p>
+  <div class="grid2"><div class="field"><label for="wc">Cash price (S$)</label><input id="wc" type="number" min="0" placeholder="e.g. 400"></div><div class="field"><label for="wt">Taxes on award ticket (S$)</label><input id="wt" type="number" min="0" value="60"></div></div><div id="wo"></div></div></details></section>`;
+  return h;
+}
+
+function allDeals(){
+  const pax=S.pax;let list=DEALS.filter(d=>d.from==="Singapore"&&(S.fop==="all"||d.op===S.fop)&&(S.fcab==="any"||d.cabin===S.fcab)&&(S.fit==="all"||d.promo*pax<=S.bal));
+  const per=d=>d.hrs?d.promo/d.hrs:1e9;
+  list.sort(S.sort==="saved"?(a,b)=>(b.reg-b.promo)-(a.reg-a.promo):S.sort==="hour"?(a,b)=>per(a)-per(b):(a,b)=>a.promo-b.promo);
+  const sel=(id,opts,v,l)=>`<div class="field"><label for="${id}">${l}</label><select id="${id}">${opts.map(([k,t])=>`<option value="${k}" ${v===k?"selected":""}>${t}</option>`).join("")}</select></div>`;
+  return `<section class="screen"><h2>Every deal from Singapore</h2><p class="muted">One-way, ${pax} ${pax>1?"people":"person"}, compared with your ${fmt(S.bal)} miles. Tap any deal to plan it.</p>
+  <div class="filters">${sel("fs",[["saved","Biggest saving"],["cheap","Fewest miles"],["hour","Best value per flight hour"]],S.sort,"Sort by")}${sel("ff",[["fit","Only what I can afford"],["all","Everything"]],S.fit,"Show")}${sel("fo",[["all","SIA + Scoot"],["SQ","Singapore Airlines"],["TR","Scoot"]],S.fop,"Airline")}${sel("fc",[["any","Any cabin"],["Y","Economy"],["W","Premium Economy"],["J","Business"]],S.fcab,"Cabin")}</div>
+  ${list.length?list.slice(0,S.shown).map((d,i)=>`<button type="button" class="row" data-plan="${esc(d.to)}" data-pcab="${d.cabin}"><span class="rank">${i+1}</span><span><b>${esc(d.to)}</b> ${d.pick?'<span class="star">★</span>':""}<br><span class="r-meta">${opTag(d.op)} ${CAB[d.cabin]}${d.hrs?` · ~${d.hrs}h`:""} · ${d.open}/30 days open</span></span><span class="r-miles">${fmt(d.promo*pax)}<small>save ${fmt((d.reg-d.promo)*pax)}</small></span></button>`).join("")+(list.length>S.shown?`<button type="button" class="btn ghost" id="more" style="width:100%">Show more (${list.length-S.shown} left)</button>`:"")
+  :`<div class="noresult"><b>Nothing fits ${fmt(S.bal)} miles${pax>1?` for ${pax} people`:""}.</b><p class="muted">Switch “Show” to Everything, or update your miles in Plan my trip.</p></div>`}</section>`;
+}
+
+/* ---------- render & events ---------- */
+function render(anim){
+  const app=$("app");
+  app.innerHTML=S.mode==="all"?allDeals():[0,step1,step2,step3,step4][S.step]();
+  if(anim&&app.firstElementChild)app.firstElementChild.classList.add("anim");
+  $("hero").hidden=S.mode==="plan"&&S.step>1;
+  const bar=$("bar");bar.hidden=S.mode==="all";
+  const back=$("bBack"),next=$("bNext");
+  back.hidden=S.step===1;
+  next.disabled=S.step===1&&!S.city;
+  next.classList.toggle("soft",S.step===4);
+  next.textContent=S.step===1?(S.city?`Continue with ${S.city}`:"Pick a destination"):S.step===2?"Next: my miles":S.step===3?"Show my best option":"Plan another trip";
+  wire();
+}
+function go(n){S.step=n;render(true);window.scrollTo({top:0,behavior:"auto"})}
+function wire(){
+  const app=$("app"),on=(sel,fn)=>app.querySelectorAll(sel).forEach(el=>el.addEventListener("click",()=>fn(el)));
+  const q=$("q");if(q){q.addEventListener("input",()=>{const pos=q.selectionStart;S.q=q.value;render();const n=$("q");n.focus();n.setSelectionRange(pos,pos)})}
+  on("#qClear",()=>{S.q="";render();$("q").focus()});
+  on("[data-r]",el=>{S.region=el.dataset.r;render()});
+  on("[data-city]",el=>{if(S.city!==el.dataset.city){S.city=el.dataset.city;S.cabin="any";S.out=0;S.back=0;S.sel=null;S.dir="out"}go(2)});
+  on("[data-trip]",el=>{S.trip=el.dataset.trip;S.sel=null;if(S.trip==="ow")S.back=0;render()});
+  on("[data-dir]",el=>{S.dir=el.dataset.dir;S.out=0;S.back=0;S.sel=null;render()});
+  on("[data-pax]",el=>{S.pax=Math.min(9,Math.max(1,S.pax+ +el.dataset.pax));save();render()});
+  on("[data-cab]",el=>{S.cabin=el.dataset.cab;S.out=0;S.back=0;S.sel=null;render()});
+  on("[data-cal]",el=>{const d=+el.dataset.d;if(el.dataset.cal==="out"){S.out=S.out===d?0:d;if(S.back&&S.back<S.out)S.back=0}else S.back=S.back===d?0:d;S.sel=null;render()});
+  on("[data-clear]",el=>{if(el.dataset.clear==="out"){S.out=0}else S.back=0;S.sel=null;render()});
+  const bal=$("bal");if(bal){bal.addEventListener("input",()=>{const v=parseInt(bal.value.replace(/[^0-9]/g,""),10)||0;S.bal=v;save()});bal.addEventListener("blur",()=>{bal.value=fmt(S.bal);render()});bal.addEventListener("focus",()=>bal.select())}
+  on("[data-add]",el=>{S.bal=Math.max(0,S.bal+ +el.dataset.add);save();render()});
+  on("[data-set]",el=>{S.bal=+el.dataset.set;save();render()});
+  on("[data-go]",el=>go(+el.dataset.go));
+  on("[data-sel]",el=>{S.sel=el.dataset.sel;render();window.scrollTo({top:0})});
+  on("[data-fix]",el=>{const f=el.dataset.fix;if(f==="cabin")S.cabin="any";if(f==="dates"){S.out=0;S.back=0}if(f==="ow"){S.trip="ow";S.back=0}if(f==="rt")S.trip="rt";if(f==="dir"){S.dir=S.dir==="out"?"in":"out";S.out=0;S.back=0}S.sel=null;render();window.scrollTo({top:0})});
+  on("[data-plan]",el=>{S.mode="plan";S.city=el.dataset.plan;S.cabin=el.dataset.pcab;S.dir="out";S.out=0;S.back=0;S.sel=null;setMode();go(2)});
+  on("#more",()=>{S.shown+=15;render()});
+  [["fs","sort"],["ff","fit"],["fo","fop"],["fc","fcab"]].forEach(([id,k])=>{const e=$(id);if(e)e.addEventListener("change",()=>{S[k]=e.value;S.shown=15;render()})});
+  const s4=$("s4");if(s4){const gap=options().find(o=>o.k===S.sel).total-S.bal;const upd=()=>{const pm=(+$("s4").value||0)*4+(+$("sg").value||0)*(+$("mg").value||0);const m=pm>0?gap/pm:Infinity;$("earn").innerHTML=`<div class="grid2"><div class="stat"><b>${fmt(pm)}</b><span>Miles per month</span></div><div class="stat"><b>${isFinite(m)?(m<1?"Under 1":m.toFixed(1)):"—"}</b><span>Months to close the gap</span></div></div>`};["s4","sg","mg"].forEach(id=>$(id).addEventListener("input",upd));upd()}
+  const wc=$("wc");if(wc){const miles=options().find(o=>o.k===S.sel).total;const upd=()=>{const c=+$("wc").value||0,t=+$("wt").value||0;if(!c){$("wo").innerHTML="";return}const cpm=(c-t)/miles*100,good=cpm>=1.5;
+    $("wo").innerHTML=`<div class="stat"><b style="color:${good?"var(--save)":"var(--warn)"}">${cpm.toFixed(2)}¢ per mile</b><span>${good?"Good use of miles. Most collectors aim for 1.5¢ or more.":"Below 1.5¢. Paying cash and saving miles for a longer trip is probably smarter."}</span></div>`};["wc","wt"].forEach(id=>$(id).addEventListener("input",upd))}
+}
+function setMode(){document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-selected",b.dataset.mode===S.mode))}
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{S.mode=b.dataset.mode;setMode();render(true);window.scrollTo({top:0})}));
+$("bBack").addEventListener("click",()=>go(Math.max(1,S.step-1)));
+$("bNext").addEventListener("click",()=>{if(S.step===4){S.city=null;S.out=0;S.back=0;S.sel=null;S.q="";go(1)}else if(!(S.step===1&&!S.city))go(S.step+1)});
+(function(){const end=new Date("2026-10-31T23:59:00+08:00"),d=Math.ceil((end-new Date())/864e5);$("deadline").textContent=d>0?`Book by 31 Oct · ${d} day${d>1?"s":""} left`:"November booking closed"})();
+render();
+(function(){
+  const H="e74d52a9119a26d3e913a200e45bd51a9932739c3b22cb9b781670637a1d8e8e";
+  const open=()=>{document.body.classList.remove("locked");$("lock").hidden=true};
+  try{if(localStorage.getItem("kf_ok_v2")===H){open();return}}catch(e){}
+  async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+  $("lockForm").addEventListener("submit",async e=>{e.preventDefault();
+    const v=$("pw").value.toLowerCase().replace(/\s+/g,"");
+    if(!v){$("pwErr").textContent="Enter the password to continue.";return}
+    if(await sha(v)===H){try{localStorage.setItem("kf_ok_v2",H)}catch(e){}open();window.scrollTo({top:0})}
+    else{$("pwErr").textContent="That password isn't right. Check the spelling and try again.";$("pw").select()}});
+  setTimeout(()=>$("pw").focus(),50);
+  $("relock").addEventListener("click",()=>{try{localStorage.removeItem("kf_ok_v2");localStorage.removeItem("kf_ok")}catch(e){}location.reload()});
+})();
+</script>
+</body>
+</html>
