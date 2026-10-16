@@ -20,7 +20,7 @@
   --gold:#E0B656;--gold-wash:#3A3020;--save:#5CCB98;--save-wash:#163327;--warn:#F08A63;--warn-wash:#3D2219;--chip:#24304C;--bar:rgba(24,34,58,.94);color-scheme:dark}}
 :root[data-theme="dark"]{--ink:#E8EDF5;--ink-soft:#A3AEC2;--paper:#0F1626;--card:#18223A;--line:#2B3854;
   --gold:#E0B656;--gold-wash:#3A3020;--save:#5CCB98;--save-wash:#163327;--warn:#F08A63;--warn-wash:#3D2219;--chip:#24304C;--bar:rgba(24,34,58,.94);color-scheme:dark}
-*,*::before,*::after{box-sizing:inherit}
+*,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none!important}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.55 "Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -57,7 +57,7 @@ button{font:inherit;color:inherit}
 .regions{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px;scrollbar-width:none}
 .regions button,.pill{border:1px solid var(--line);background:var(--card);padding:8px 12px;border-radius:999px;white-space:nowrap;cursor:pointer;font-weight:500;font-size:.9rem}
 .regions button[aria-pressed="true"],.pill[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.dests{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:8px}
+.dests{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
 .dest{display:flex;flex-direction:column;align-items:flex-start;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;min-height:84px}
 .dest[aria-pressed="true"]{border:2px solid var(--gold);padding:11px 13px}
 .dest .nm{font-weight:700;font-size:1.05rem}
@@ -67,6 +67,22 @@ button{font:inherit;color:inherit}
 .star{color:var(--gold);font-size:.8rem;font-weight:700}
 .noresult{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:16px}
 
+.bookbox{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:8px}
+.bk-title{font-weight:700;margin-bottom:12px}
+.bk-step{display:grid;grid-template-columns:28px 1fr;gap:10px;margin-bottom:14px}
+.bk-step:last-child{margin-bottom:0}
+.bk-n{width:26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.srch{background:var(--card);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;margin:6px 0 2px;line-height:1.7}
+/* choices */
+.choices{display:grid;gap:10px;margin-top:14px}
+.choice{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 18px;cursor:pointer;min-height:64px}
+.choice b{font:700 1.2rem "Bricolage Grotesque",system-ui,sans-serif}
+.choice span{font-size:.9rem;color:var(--ink-soft)}
+.choice[aria-pressed="true"]{border-color:var(--gold);background:var(--gold-wash)}
+.choice:hover{border-color:var(--gold)}
+.numgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.choice.num{align-items:center;text-align:center}
+.choice.num b{font-size:1.8rem}
 /* step 2 */
 .big2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .bigbtn{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:14px;text-align:left;cursor:pointer}
@@ -78,7 +94,11 @@ button{font:inherit;color:inherit}
 .stepper button:disabled{opacity:.35;cursor:not-allowed}
 .stepper output{min-width:90px;text-align:center;font:700 1.3rem "Bricolage Grotesque",system-ui,sans-serif}
 .cabins{display:flex;flex-wrap:wrap;gap:6px}
-.cal-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px}
+.cal-wrap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;max-width:380px}
+.cal-month{font:700 1rem "Bricolage Grotesque",system-ui,sans-serif;text-align:center;margin-bottom:8px}
+.cta2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.save-pill{display:inline-block;margin-left:8px;font:600 .8rem "Public Sans",system-ui,sans-serif;color:var(--save);background:var(--save-wash);padding:3px 8px;border-radius:6px;vertical-align:middle}
+.row2{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end}
 .cal-head{display:grid;grid-template-columns:repeat(7,1fr);font-size:.75rem;color:var(--ink-soft);text-align:center;margin-bottom:4px}
 .cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
 .cal button,.cal span{aspect-ratio:1/1;border-radius:8px;border:0;font-weight:600;font-size:.95rem;display:flex;align-items:center;justify-content:center}
@@ -173,27 +193,27 @@ footer{margin-top:28px;font-size:.8rem;color:var(--ink-soft);border-top:1px soli
 </style>
 </head>
 <body class="locked">
-<div class="lock" id="lock"><form class="lock-box" id="lockForm" autocomplete="off">
+<div class="lock" id="lock"><div class="lock-box" id="lockForm">
   <span class="brand">Kris Finance</span>
   <h2>Miles Escape Planner</h2>
   <p class="muted">For Kris Finance clients and friends. Enter the password Kris shared with you.</p>
   <label for="pw" class="muted" style="display:block;margin-top:10px">Password</label>
   <input id="pw" type="password" autocapitalize="none" autocorrect="off" spellcheck="false" style="margin-top:4px">
   <div class="lock-err" id="pwErr" role="alert"></div>
-  <button type="submit" class="btn primary" style="width:100%;margin-top:4px">Unlock</button>
+  <button type="button" id="unlockBtn" class="btn primary" style="width:100%;margin-top:4px">Unlock</button>
   <a class="btn ghost" style="margin-top:8px" href="https://wa.me/6592716951?text=Hi%20Kris%2C%20may%20I%20have%20the%20password%20for%20your%20Miles%20Escape%20Planner%3F" target="_blank" rel="noopener">Don't have it? Ask Kris on WhatsApp</a>
-</form></div>
+</div></div>
 <div class="wrap">
   <div class="top"><span class="brand">Kris Finance</span><span class="deadline" id="deadline">Book by 31 Oct</span></div>
   <div id="hero"><h1>Where can my miles take me in November?</h1>
-  <p class="muted" style="margin-bottom:14px">KrisFlyer Spontaneous Escapes: up to 30% fewer miles on Singapore Airlines and 15% fewer on Scoot.</p></div>
+  <p class="muted" style="margin-bottom:14px">Up to 30% off KrisFlyer award flights in November.</p></div>
   <div class="modes" role="tablist">
     <button role="tab" aria-selected="true" data-mode="plan">Plan my trip</button>
     <button role="tab" aria-selected="false" data-mode="all">See all deals</button>
   </div>
   <main id="app" aria-live="polite"></main>
   <footer>
-    Prices are one-way per person after discount, checked line by line against the official singaporeair.com and flyscoot.com November 2026 lists on 16 Oct 2026. Taxes and fees are extra. Promo seats are limited and can't be changed or cancelled. Struck-out days are blackout dates with no promo price; open days still depend on seats left. "Kris's pick" marks routes Kris Finance rates as strong value. For general information only; not financial advice.<br><br>Created by Kris Finance.<br><br><button type="button" class="linkbtn" id="relock">Lock this page</button>
+    Created by Kris Finance · Prices checked against singaporeair.com and flyscoot.com on 16 Oct 2026. Taxes extra. Seats limited. General information only, not financial advice.<br><br><button type="button" class="linkbtn" id="relock">Lock this page</button>
   </footer>
 </div>
 <div class="bar" id="bar"><div class="bar-in">
@@ -391,7 +411,7 @@ const opTag=op=>op==="SQ"?'<span class="tag sq">SIA</span>':'<span class="tag tr
 const DOW=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const dayLabel=d=>`${DOW[new Date(2026,10,d).getDay()]} ${d} Nov`;
 
-const S={mode:"plan",step:1,city:null,dir:"out",trip:"rt",pax:1,cabin:"any",out:0,back:0,bal:20000,q:"",region:"all",sel:null,sort:"saved",fop:"all",fit:"fit",fcab:"any",shown:15};
+const S={tripSet:false,paxSet:false,cabSet:false,showAll:false,mode:"plan",step:1,city:null,dir:"out",trip:"rt",pax:1,cabin:"any",out:0,back:0,bal:20000,q:"",region:"all",sel:null,sort:"saved",fop:"all",fit:"fit",fcab:"any",shown:15};
 try{const b=localStorage.getItem("kf_bal");if(b!==null)S.bal=+b||0;const p=localStorage.getItem("kf_pax");if(p)S.pax=Math.min(9,Math.max(1,+p))}catch(e){}
 function save(){try{localStorage.setItem("kf_bal",S.bal);localStorage.setItem("kf_pax",S.pax)}catch(e){}}
 
@@ -421,18 +441,55 @@ function options(){
 function dayState(a,b,d){if(!hasDir(a,b))return"free";return legs(a,b,d).length?"ok":"no"}
 
 /* ---------- screens ---------- */
-function progress(){return `<div class="progress">${[1,2,3,4].map(i=>`<i class="${i<=S.step?"on":""}"></i>`).join("")}</div><div class="stepno">Step ${S.step} of 4</div>`}
+const TOTALQ=6;
+function progress(){const q=Math.min(S.step,TOTALQ+1);return `<div class="progress">${Array.from({length:TOTALQ},(_,i)=>`<i class="${i<q?"on":""}"></i>`).join("")}</div><div class="stepno">${S.step>TOTALQ?"Your result":`Question ${S.step} of ${TOTALQ}`}</div>`}
+const POPULAR=["Kuala Lumpur","Bali","Bangkok","Penang","Phuket","Da Nang","Melbourne","Paris"];
+function destCard(d){return `<button type="button" class="dest" data-city="${esc(d.name)}" aria-pressed="${S.city===d.name}">
+    <span class="nm">${esc(d.name)} ${d.pick?'<span class="star">★</span>':""}</span><span class="ct">${esc(d.country)}</span>
+    <span class="fr">from <b>${fmt(d.min)}</b> miles</span></button>`}
 
 function step1(){
-  const q=S.q.trim().toLowerCase();
+  const q=S.q.trim().toLowerCase(),browsing=q||S.showAll;
   const list=DESTS.filter(d=>(S.region==="all"||d.region===S.region)&&(!q||(d.name+" "+d.country+" "+d.alias).toLowerCase().includes(q)));
-  return `<section class="screen">${progress()}<h2>Where do you want to go?</h2><p class="muted">Tap a city. Prices are the cheapest one-way seat.</p>
-  <div class="search"><input id="q" type="search" placeholder="Type a city, country or code, e.g. KL" value="${esc(S.q)}" autocomplete="off" aria-label="Search destinations">${S.q?'<button class="clear" id="qClear" type="button" aria-label="Clear search">✕</button>':""}</div>
-  <div class="regions">${REGIONS.map(([k,v])=>`<button type="button" data-r="${k}" aria-pressed="${S.region===k}">${v}</button>`).join("")}</div>
-  ${list.length?`<div class="dests">${list.map(d=>`<button type="button" class="dest" data-city="${esc(d.name)}" aria-pressed="${S.city===d.name}">
-    <span class="nm">${esc(d.name)} ${d.pick?'<span class="star">★ Kris\'s pick</span>':""}</span><span class="ct">${esc(d.country)} · ${d.ops.map(o=>o==="SQ"?"SIA":"Scoot").join(" & ")}</span>
-    <span class="fr">from <b>${fmt(d.min)}</b> miles</span></button>`).join("")}</div>`
-  :`<div class="noresult"><b>No November deals match “${esc(S.q)}”.</b><p class="muted">Check the spelling, try the country name, or tap “All”.</p></div>`}</section>`;
+  const pop=POPULAR.map(n=>DESTS.find(d=>d.name===n)).filter(Boolean);
+  return `<section class="screen">${progress()}<h2>Where do you want to go?</h2>
+  <div class="search"><input id="q" type="search" placeholder="Type a city, e.g. KL or Bali" value="${esc(S.q)}" autocomplete="off" aria-label="Search destinations">${S.q?'<button class="clear" id="qClear" type="button" aria-label="Clear search">✕</button>':""}</div>
+  ${!browsing?`<h3 style="margin-top:4px">Popular</h3><div class="dests">${pop.map(destCard).join("")}</div>
+     <button type="button" class="btn ghost" id="showAll" style="width:100%;margin-top:12px">See all ${DESTS.length} destinations</button>`
+  :`${q?"":`<div class="regions">${REGIONS.map(([k,v])=>`<button type="button" data-r="${k}" aria-pressed="${S.region===k}">${v}</button>`).join("")}</div>`}
+    ${list.length?`<div class="dests">${list.map(destCard).join("")}</div>`
+    :`<div class="noresult"><b>No deals for “${esc(S.q)}”.</b><p class="muted">Try another spelling or a country name.</p></div>`}`}</section>`;
+}
+function stepTrip(){
+  return `<section class="screen">${progress()}<h2>Return or one-way?</h2>
+  <div class="choices">
+    <button type="button" class="choice" data-trip="rt" aria-pressed="${S.tripSet&&S.trip==="rt"}"><b>Return</b><span>${esc(A())} → ${esc(B())} → ${esc(A())}</span></button>
+    <button type="button" class="choice" data-trip="ow" aria-pressed="${S.tripSet&&S.trip==="ow"}"><b>One-way</b><span>${esc(A())} → ${esc(B())}</span></button>
+  </div>
+  <p class="muted" style="margin-top:14px">Starting from ${esc(A())}? <button type="button" class="linkbtn" data-dir="${S.dir==="out"?"in":"out"}">No, I'm starting in ${esc(B())}</button></p></section>`;
+}
+function stepPax(){
+  return `<section class="screen">${progress()}<h2>How many people are flying?</h2>
+  <div class="numgrid">${[1,2,3,4,5,6].map(n=>`<button type="button" class="choice num" data-npax="${n}" aria-pressed="${S.paxSet&&S.pax===n}"><b>${n}</b><span>${n===1?"Just me":"people"}</span></button>`).join("")}</div></section>`;
+}
+function stepCabin(){
+  const c=S.city,ds=DEALS.filter(d=>d.sinRoute&&d.other===c);
+  const min=k=>{const x=ds.filter(d=>k==="any"||d.cabin===k);return x.length?Math.min(...x.map(d=>d.promo)):null};
+  const opts=[["any","Cheapest","Lowest miles, any class"],...routeCabins().map(k=>[k,CAB[k],""])];
+  return `<section class="screen">${progress()}<h2>Which class?</h2>
+  <div class="choices">${opts.map(([k,t,s])=>`<button type="button" class="choice" data-ncab="${k}" aria-pressed="${S.cabSet&&S.cabin===k}"><b>${t}</b><span>${s?s+" · ":""}from ${fmt(min(k))} miles one-way</span></button>`).join("")}</div></section>`;
+}
+function stepDates(){
+  return `<section class="screen">${progress()}<h2>When do you want to fly?</h2>
+  <p class="muted">Green days have promo prices. Not sure? Tap <b>Skip</b> below.</p>
+  <h3>${S.trip==="rt"?"1. Fly out":"Fly out"}</h3>${calendar("out",A(),B(),S.out,0)}
+  ${S.trip==="rt"&&S.out?`<h3 id="backHead">2. Fly back</h3>${calendar("back",B(),A(),S.back,S.out)}`:""}</section>`;
+}
+function stepMiles(){
+  return `<section class="screen">${progress()}<h2>How many KrisFlyer miles do you have?</h2>
+  <div class="miles" style="margin-top:12px"><input id="bal" type="text" inputmode="numeric" value="${fmt(S.bal)}" aria-label="KrisFlyer miles balance"></div>
+  <div class="presets">${[10000,25000,50000,100000].map(v=>`<button type="button" class="pill" data-set="${v}" aria-pressed="${S.bal===v}">${fmt(v)}</button>`).join("")}</div>
+  <p class="muted" style="margin-top:12px">Not sure? It's on the home screen of the SingaporeAir app. A rough number is fine.</p></section>`;
 }
 
 function calendar(id,a,b,sel,minDay){
@@ -440,50 +497,43 @@ function calendar(id,a,b,sel,minDay){
   for(let d=1;d<=30;d++){const st=minDay&&d<minDay?"na":dayState(a,b,d);const dis=st==="na"||st==="no";
     cells+=`<button type="button" class="${st==="ok"?"":st}" data-cal="${id}" data-d="${d}" aria-pressed="${sel===d}" ${dis?"disabled":""} aria-label="${dayLabel(d)}${st==="no"?", no promo seats":""}">${d}</button>`}
   const free=!hasDir(a,b);
-  return `<div class="cal-wrap"><div class="cal-head">${DOW.map(x=>`<span>${x[0]}</span>`).join("")}</div><div class="cal">${cells}</div>
-  <div class="legend">${free?"":'<span><i style="background:var(--save-wash);border:1px solid var(--save)"></i>Promo price available</span><span><i style="background:var(--chip)"></i>No promo that day</span>'}</div>
-  ${free?`<div class="hint">${esc(a)} → ${esc(b)} isn't on promo this month, so this leg costs the regular Saver price. Pick any day.</div>`:""}
-  ${sel?`<button type="button" class="linkbtn" data-clear="${id}">Clear this date</button>`:""}</div>`;
+  return `<div class="cal-wrap"><div class="cal-month">November 2026</div><div class="cal-head">${DOW.map(x=>`<span>${x[0]}</span>`).join("")}</div><div class="cal">${cells}</div>
+  <div class="legend">${free?"":'<span><i style="background:var(--save-wash);border:1px solid var(--save)"></i>Promo price</span><span><i style="background:var(--chip)"></i>No promo</span>'}</div>
+  ${free?`<div class="hint">No promo this way. Regular price applies.</div>`:""}
+  ${sel?`<button type="button" class="linkbtn" data-clear="${id}">Clear</button>`:""}</div>`;
 }
 
-function step2(){
-  const c=S.city,cabs=routeCabins();
-  return `<section class="screen">${progress()}<h2>Your trip to ${esc(c)}</h2>
-  <h3>Return or one-way?</h3><div class="big2">
-    <button type="button" class="bigbtn" data-trip="rt" aria-pressed="${S.trip==="rt"}"><b>Return</b><span>There and back</span></button>
-    <button type="button" class="bigbtn" data-trip="ow" aria-pressed="${S.trip==="ow"}"><b>One-way</b><span>Just one direction</span></button></div>
-  <h3>Starting from</h3><div class="big2">
-    <button type="button" class="bigbtn" data-dir="out" aria-pressed="${S.dir==="out"}"><b>Singapore</b><span>Most people pick this</span></button>
-    <button type="button" class="bigbtn" data-dir="in" aria-pressed="${S.dir==="in"}"><b>${esc(c)}</b><span>Already there</span></button></div>
-  <h3>How many travellers?</h3>
-  <div class="stepper"><button type="button" data-pax="-1" ${S.pax<=1?"disabled":""} aria-label="Fewer travellers">−</button><output>${S.pax} ${S.pax>1?"people":"person"}</output><button type="button" data-pax="1" ${S.pax>=9?"disabled":""} aria-label="More travellers">+</button></div>
-  <h3>Cabin</h3><div class="cabins"><button type="button" class="pill" data-cab="any" aria-pressed="${S.cabin==="any"}">Cheapest</button>${cabs.map(k=>`<button type="button" class="pill" data-cab="${k}" aria-pressed="${S.cabin===k}">${CAB[k]}</button>`).join("")}</div>
-  <h3>When do you fly ${S.dir==="out"?"out":"to Singapore"}? <span class="muted" style="font-weight:400">(optional)</span></h3>
-  ${calendar("out",A(),B(),S.out,0)}
-  ${S.trip==="rt"?`<h3>When do you fly back? <span class="muted" style="font-weight:400">(optional)</span></h3>${calendar("back",B(),A(),S.back,S.out)}`:""}
-  <div class="hint">Not sure of dates yet? Skip them. We'll show how many days are open.</div></section>`;
+const SIA_HOME="https://www.singaporeair.com/en_UK/sg/home",TR_HOME="https://www.flyscoot.com/en";
+function bookBox(o){
+  const legs=[];
+  if(o.out)legs.push({l:"out",op:o.out.op,cabin:o.out.cabin,from:o.out.from,to:o.out.to,promo:true,day:S.out});
+  else if(o.outE)legs.push({l:"out",op:o.outE.op,cabin:o.outE.cabin,from:A(),to:B(),promo:false,day:S.out});
+  if(S.trip==="rt"){if(o.ret)legs.push({l:"back",op:o.ret.op,cabin:o.ret.cabin,from:o.ret.from,to:o.ret.to,promo:true,day:S.back});
+    else if(o.retE)legs.push({l:"back",op:o.retE.op,cabin:o.retE.cabin,from:B(),to:A(),promo:false,day:S.back});}
+  const ops=[...new Set(legs.map(x=>x.op))];
+  return ops.map(op=>{const L=legs.filter(x=>x.op===op),sq=op==="SQ",site=sq?"singaporeair.com":"flyscoot.com";
+    const rows=L.map(x=>`${x.l==="out"?"Fly out":"Fly back"}: <b>${esc(x.from)} → ${esc(x.to)}</b>, ${x.day?`<b>${dayLabel(x.day)}</b>`:"any green day"}`);
+    rows.push(`<b>${S.pax}</b> passenger${S.pax>1?"s":""} · <b>${CAB[L[0].cabin]}</b>${L.length>1&&L[1].cabin!==L[0].cabin?` out, <b>${CAB[L[1].cabin]}</b> back`:""}`);
+    const txt=rows.join("\n").replace(/<[^>]+>/g,"");
+    const reg=L.filter(x=>!x.promo);
+    return `<div class="bookbox"><div class="bk-title">${ops.length>1?(sq?"Singapore Airlines flight":"Scoot flight"):"Book it in 3 steps"}</div>
+    <div class="bk-step"><span class="bk-n">1</span><div><a class="btn primary" href="${sq?SIA_HOME:TR_HOME}" target="_blank" rel="noopener">Open ${site} ↗</a><div class="muted" style="margin-top:4px">Log in with your KrisFlyer account.</div></div></div>
+    <div class="bk-step"><span class="bk-n">2</span><div>${sq?"Choose <b>Redeem flights</b> and search:":"Search your flight and pay with <b>KrisFlyer miles</b>:"}<div class="srch">${rows.join("<br>")}</div><button type="button" class="linkbtn" data-copy="${esc(txt)}">Copy these details</button></div></div>
+    <div class="bk-step"><span class="bk-n">3</span><div>${reg.length===L.length?"Pick the normal award fare (not on promo this month).":`Pick the fare marked <b>${sq?"Promo Award":"promo"}</b>.`}${reg.length&&reg.length<L.length?` The ${reg[0].l==="out"?"outbound":"return"} flight shows the normal price.`:""} Then pay the taxes.<div class="muted" style="margin-top:4px">Can't be changed or refunded after booking.</div></div></div></div>`}).join("");
 }
-
-function step3(){
-  return `<section class="screen">${progress()}<h2>How many KrisFlyer miles do you have?</h2>
-  <p class="muted">A rough number is fine.</p>
-  <div class="miles" style="margin-top:12px"><input id="bal" type="text" inputmode="numeric" value="${fmt(S.bal)}" aria-label="KrisFlyer miles balance"></div>
-  <div class="presets">${[-5000,5000].map(v=>`<button type="button" class="pill" data-add="${v}">${v>0?"+":"−"}${fmt(Math.abs(v))}</button>`).join("")}${[10000,25000,50000,100000].map(v=>`<button type="button" class="pill" data-set="${v}" aria-pressed="${S.bal===v}">${fmt(v)}</button>`).join("")}</div>
-  <div class="hint"><b>Where to find it:</b> open the SingaporeAir or KrisFlyer app; your balance is on the home screen.<br>Booking for family? You can use your miles for them if they're on your KrisFlyer redemption nominee list.</div></section>`;
-}
-
+function copyText(t){try{if(navigator.clipboard&&window.isSecureContext)return navigator.clipboard.writeText(t)}catch(e){}const a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{document.execCommand("copy")}catch(e){}a.remove();return Promise.resolve()}
 function legBlock(label,d,e,day){
-  if(e){const fr=label==="Out"?A():B(),to=label==="Out"?B():A();return `<div class="leg"><div class="lb">${label}</div><div><div class="rt">${esc(fr)} → ${esc(to)}</div><div class="dt">${opTag(e.op)} ${CAB[e.cabin]} · ~${fmt(e.miles)} miles</div><div class="dt"><span class="tag est">Not on promo</span> Regular Saver price. Check seats before booking the promo leg.${day?` · ${dayLabel(day)}`:""}</div></div></div>`}
+  if(e){const fr=label==="Out"?A():B(),to=label==="Out"?B():A();return `<div class="leg"><div class="lb">${label}</div><div><div class="rt">${esc(fr)} → ${esc(to)}</div><div class="dt">${opTag(e.op)} ${CAB[e.cabin]} · ~${fmt(e.miles)} miles</div><div class="dt"><span class="tag est">Regular price</span>${day?` · ${dayLabel(day)}`:""}</div></div></div>`}
   return `<div class="leg"><div class="lb">${label}</div><div><div class="rt">${esc(d.from)} → ${esc(d.to)}</div>
   <div class="dt">${opTag(d.op)} ${CAB[d.cabin]} · <span class="strike">${fmt(d.reg)}</span> <b style="color:var(--ink)">${fmt(d.promo)}</b> miles</div>
-  <div class="dt">${day?`<b style="color:var(--save)">${dayLabel(day)} ✓ promo open</b>`:`Promo open on ${d.open} of 30 days`} · ${d.fl==="All"?"all flights":esc(d.fl)}</div></div></div>`;
+  <div class="dt">${day?`<b style="color:var(--save)">${dayLabel(day)} ✓</b>`:`${d.open} days open in Nov`}</div></div></div>`;
 }
 function legTxt(d,e){return d?`${d.from} → ${d.to}, ${opName(d.op)} ${CAB[d.cabin]}, ${fmt(d.promo)} miles (usually ${fmt(d.reg)})`:`${opName(e.op)} ${CAB[e.cabin]}, ~${fmt(e.miles)} miles (regular Saver)`}
 function shareText(o){return `✈️ KrisFlyer Spontaneous Escapes, Nov 2026\nOut: ${legTxt(o.out,o.outE)}${S.out?` on ${dayLabel(S.out)}`:""}${S.trip==="rt"?`\nBack: ${legTxt(o.ret,o.retE)}${S.back?` on ${dayLabel(S.back)}`:""}`:""}\nTotal: ${fmt(o.total)} miles${S.pax>1?` for ${S.pax}`:""} + taxes\nBook by 31 Oct 2026\n\nPlanned with Kris Finance`}
 
-function step4(){
+function stepResult(){
   const opts=options(),c=S.city;
-  const edit=`<div class="editbar"><button type="button" data-go="1">${esc(A())} → ${esc(B())}</button><button type="button" data-go="2">${S.trip==="rt"?"Return":"One-way"} · ${S.pax} ${S.pax>1?"people":"person"} · ${S.cabin==="any"?"Cheapest cabin":CAB[S.cabin]}</button><button type="button" data-go="2">${S.out?dayLabel(S.out)+(S.trip==="rt"&&S.back?" – "+dayLabel(S.back):""):"Any dates"}</button><button type="button" data-go="3">${fmt(S.bal)} miles</button></div>`;
+  const edit=`<div class="editbar"><button type="button" data-go="1">${esc(A())} → ${esc(B())}</button><button type="button" data-go="2">${S.trip==="rt"?"Return":"One-way"}</button><button type="button" data-go="3">${S.pax} ${S.pax>1?"people":"person"}</button><button type="button" data-go="4">${S.cabin==="any"?"Cheapest class":CAB[S.cabin]}</button><button type="button" data-go="5">${S.out||(S.trip==="rt"&&S.back)?[S.out?dayLabel(S.out):"Any day",S.trip==="rt"?(S.back?dayLabel(S.back):"any day"):""].filter(Boolean).join(" – "):"Any dates"}</button><button type="button" data-go="6">${fmt(S.bal)} miles</button></div>`;
   if(!opts.length){
     return `<section class="screen">${progress()}${edit}<div class="noresult"><h2>No promo seats match that</h2><p class="muted">Try one of these fixes:</p><div class="presets">
     ${S.cabin!=="any"?'<button type="button" class="pill" data-fix="cabin">Any cabin</button>':""}${S.out||S.back?'<button type="button" class="pill" data-fix="dates">Clear dates</button>':""}${S.trip==="rt"?'<button type="button" class="pill" data-fix="ow">Make it one-way</button>':'<button type="button" class="pill" data-fix="rt">Make it return</button>'}<button type="button" class="pill" data-fix="dir">Swap direction</button></div></div></section>`;
@@ -494,38 +544,31 @@ function step4(){
   const ops=[...new Set([o.out,o.ret].filter(Boolean).map(d=>d.op))];
   const badge=gap<=0?(isBest?'<span class="badge">Best option for you</span>':'<span class="badge">You can afford this</span>'):'<span class="badge short">Not enough miles yet</span>';
   let h=`<section class="screen">${progress()}${edit}
-  <div class="ticket"><div class="t-main">${badge}<div class="t-total">${fmt(o.total)} <small>miles ${S.trip==="rt"?"return":"one-way"}${S.pax>1?` for ${S.pax}`:""} + taxes</small></div>
-  <div class="t-verdict" style="color:${gap<=0?"var(--save)":"var(--warn)"}">${gap<=0?`✓ You have enough. ${fmt(-gap)} miles left after booking.`:`You need ${fmt(gap)} more miles.`}</div>
-  ${o.saved>0?`<div class="muted">That's ${fmt(o.saved)} miles less than usual.</div>`:""}</div>
+  <div class="ticket"><div class="t-main">${badge}<div class="t-total">${fmt(o.total)} <small>miles${S.pax>1?` for ${S.pax}`:""}</small>${o.saved>0?`<span class="save-pill">Save ${fmt(o.saved)}</span>`:""}</div>
+  <div class="t-verdict" style="color:${gap<=0?"var(--save)":"var(--warn)"}">${gap<=0?`✓ You have enough miles`:`Need ${fmt(gap)} more miles`}</div></div>
   <div class="perf" aria-hidden="true"></div><div class="t-legs">${legBlock("Out",o.out,o.outE,S.out)}${S.trip==="rt"?legBlock("Back",o.ret,o.retE,S.back):""}</div>
-  <div class="cta">${ops.map(op=>`<a class="btn primary" href="${op==="SQ"?SIA_URL:TR_URL}" target="_blank" rel="noopener">Book on ${op==="SQ"?"singaporeair.com":"flyscoot.com"}</a>`).join("")}
-  <a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(shareText(o))}" target="_blank" rel="noopener">Share on WhatsApp</a>
-  <a class="btn ghost" href="https://wa.me/${KRIS_WA}?text=${encodeURIComponent("Hi Kris, can you help me with this miles trip?\n\n"+shareText(o))}" target="_blank" rel="noopener">Ask Kris about this trip</a></div></div>`;
+  <div class="cta">${bookBox(o)}
+  <div class="cta2"><a class="btn wa" href="https://wa.me/?text=${encodeURIComponent(shareText(o))}" target="_blank" rel="noopener">Share</a>
+  <a class="btn ghost" href="https://wa.me/${KRIS_WA}?text=${encodeURIComponent("Hi Kris, can you help me with this miles trip?\n\n"+shareText(o))}" target="_blank" rel="noopener">Ask Kris</a></div></div></div>`;
 
   if(gap>0){
     const alt=fits[0];
-    h+=`<div class="callout bad"><h3 style="margin-top:0">How to close the ${fmt(gap)}-mile gap</h3><ol class="steps">
-    ${alt?`<li><b>Pick a cheaper way:</b> <button type="button" class="linkbtn" data-sel="${alt.k}">${fmt(alt.total)} miles, which you can afford</button></li>`:""}
-    <li><b>Move points from your credit cards</b> to KrisFlyer. It can take 1–14 working days, so do it today.</li>
-    <li><b>Shangri-La Circle points</b> convert at a 30% bonus until 31 Oct (1,000 points → 1,625 miles).</li>
-    ${S.trip==="rt"?'<li><b>Use miles one way only</b> and pay cash for the other flight. <button type="button" class="linkbtn" data-fix="ow">Show one-way</button></li>':""}</ol></div>
-    <details><summary>How long to earn it from spending?</summary><div class="dbody">
+    h+=`<div class="callout bad"><h3 style="margin-top:0">Short of miles? Try:</h3><ol class="steps">
+    ${alt?`<li><button type="button" class="linkbtn" data-sel="${alt.k}">A cheaper option (${fmt(alt.total)} miles)</button></li>`:""}
+    <li>Transfer credit card points to KrisFlyer (can take 2 weeks)</li>
+    ${S.trip==="rt"?'<li><button type="button" class="linkbtn" data-fix="ow">Use miles one way only</button></li>':""}</ol></div>
+    <details><summary>Earn it from spending</summary><div class="dbody">
     <div class="grid2"><div class="field"><label for="s4">Monthly spend on 4 mpd cards (S$)</label><input id="s4" type="number" min="0" step="100" value="1000"></div>
     <div class="field"><label for="sg">Other monthly spend (S$)</label><input id="sg" type="number" min="0" step="100" value="1000"></div>
     <div class="field"><label for="mg">Miles per S$ on other spend</label><input id="mg" type="number" min="0" step="0.1" value="1.2"></div></div><div id="earn"></div>
-    <p class="muted">New spend won't credit before 31 Oct, so this is for a future month's deals.</p></div></details>`;
+</div></details>`;
   } else {
     const up=opts.find(x=>x.k!==o.k&&x.total<=S.bal&&[x.out,x.ret].some(d=>d&&d.cabin==="J")&&![o.out,o.ret].some(d=>d&&d.cabin==="J"));
-    if(up)h+=`<div class="callout good"><b>Upgrade idea:</b> you can afford Business for ${fmt(up.total-o.total)} more miles. <button type="button" class="linkbtn" data-sel="${up.k}">See it</button></div>`;
+    if(up)h+=`<div class="callout good">Business is only ${fmt(up.total-o.total)} more miles. <button type="button" class="linkbtn" data-sel="${up.k}">See it</button></div>`;
   }
-  h+=`<div class="callout"><h3 style="margin-top:0">How to book (takes 5 minutes)</h3><ol class="steps">
-  <li>Log in to your KrisFlyer account on ${ops.includes("TR")&&!ops.includes("SQ")?"flyscoot.com or the Scoot app":"singaporeair.com or the SingaporeAir app"}.</li>
-  <li>Choose <b>Redeem flights</b> and search ${esc(A())} → ${esc(B())}${S.out?` on ${dayLabel(S.out)}`:""}.</li>
-  <li>Pick the fare marked <b>Promo</b>. If you don't see it, those seats are gone; try a nearby date.</li>
-  <li>Pay the taxes and finish in the same session. Promo tickets can't be changed or refunded.</li></ol>
-  ${ops.length>1?'<p class="muted">Your trip mixes airlines, so book the SIA and Scoot legs separately on each website.</p>':""}</div>`;
-  if(opts.length>1)h+=`<details><summary>Other ways to fly this (${opts.length-1})</summary><div class="dbody">${opts.filter(x=>x.k!==o.k).slice(0,10).map(x=>`<button type="button" class="alt" data-sel="${x.k}"><span>${[x.out?`${x.out.op==="SQ"?"SIA":"Scoot"} ${CAB[x.out.cabin]} out`:`${x.outE.op==="SQ"?"SIA":"Scoot"} ${CAB[x.outE.cabin]} out (regular price)`,S.trip==="rt"?(x.ret?`${x.ret.op==="SQ"?"SIA":"Scoot"} ${CAB[x.ret.cabin]} back`:`${x.retE.op==="SQ"?"SIA":"Scoot"} ${CAB[x.retE.cabin]} back (regular price)`):""].filter(Boolean).join(" + ")}${x.total>S.bal?' <span class="tag est">over budget</span>':""}</span><b>${fmt(x.total)}</b></button>`).join("")}</div></details>`;
-  h+=`<details><summary>Is using miles worth it here?</summary><div class="dbody"><p class="muted">Look up the cash price for the same flights and compare.</p>
+  
+  if(opts.length>1)h+=`<details><summary>Other options (${opts.length-1})</summary><div class="dbody">${opts.filter(x=>x.k!==o.k).slice(0,10).map(x=>`<button type="button" class="alt" data-sel="${x.k}"><span>${[x.out?`${x.out.op==="SQ"?"SIA":"Scoot"} ${CAB[x.out.cabin]} out`:`${x.outE.op==="SQ"?"SIA":"Scoot"} ${CAB[x.outE.cabin]} out (regular price)`,S.trip==="rt"?(x.ret?`${x.ret.op==="SQ"?"SIA":"Scoot"} ${CAB[x.ret.cabin]} back`:`${x.retE.op==="SQ"?"SIA":"Scoot"} ${CAB[x.retE.cabin]} back (regular price)`):""].filter(Boolean).join(" + ")}${x.total>S.bal?' <span class="tag est">over budget</span>':""}</span><b>${fmt(x.total)}</b></button>`).join("")}</div></details>`;
+  h+=`<details><summary>Miles or cash?</summary><div class="dbody">
   <div class="grid2"><div class="field"><label for="wc">Cash price (S$)</label><input id="wc" type="number" min="0" placeholder="e.g. 400"></div><div class="field"><label for="wt">Taxes on award ticket (S$)</label><input id="wt" type="number" min="0" value="60"></div></div><div id="wo"></div></div></details></section>`;
   return h;
 }
@@ -543,38 +586,45 @@ function allDeals(){
 
 /* ---------- render & events ---------- */
 function render(anim){
-  const app=$("app");
-  app.innerHTML=S.mode==="all"?allDeals():[0,step1,step2,step3,step4][S.step]();
+  const app=$("app"),steps=[0,step1,stepTrip,stepPax,stepCabin,stepDates,stepMiles,stepResult];
+  app.innerHTML=S.mode==="all"?allDeals():steps[S.step]();
   if(anim&&app.firstElementChild)app.firstElementChild.classList.add("anim");
   $("hero").hidden=S.mode==="plan"&&S.step>1;
   const bar=$("bar");bar.hidden=S.mode==="all";
-  const back=$("bBack"),next=$("bNext");
-  back.hidden=S.step===1;
-  next.disabled=S.step===1&&!S.city;
-  next.classList.toggle("soft",S.step===4);
-  next.textContent=S.step===1?(S.city?`Continue with ${S.city}`:"Pick a destination"):S.step===2?"Next: my miles":S.step===3?"Show my best option":"Plan another trip";
+  const back=$("bBack"),next=$("bNext"),st=S.step;
+  back.hidden=st===1;
+  const answered={1:!!S.city,2:S.tripSet,3:S.paxSet,4:S.cabSet}[st];
+  next.hidden=st<=4&&!answered;
+  next.disabled=false;
+  next.classList.toggle("soft",st===7);
+  next.textContent=S.ret&&st<7?"Update my result":st===5?((S.out||S.back)?"Next":"Skip, I'm flexible"):st===6?"Show my result":st===7?"Start again":"Next";
   wire();
 }
+function pick(el,n){el.setAttribute("aria-pressed","true");setTimeout(()=>go(S.ret?7:n),160)}
 function go(n){S.step=n;render(true);window.scrollTo({top:0,behavior:"auto"})}
 function wire(){
   const app=$("app"),on=(sel,fn)=>app.querySelectorAll(sel).forEach(el=>el.addEventListener("click",()=>fn(el)));
   const q=$("q");if(q){q.addEventListener("input",()=>{const pos=q.selectionStart;S.q=q.value;render();const n=$("q");n.focus();n.setSelectionRange(pos,pos)})}
   on("#qClear",()=>{S.q="";render();$("q").focus()});
   on("[data-r]",el=>{S.region=el.dataset.r;render()});
-  on("[data-city]",el=>{if(S.city!==el.dataset.city){S.city=el.dataset.city;S.cabin="any";S.out=0;S.back=0;S.sel=null;S.dir="out"}go(2)});
-  on("[data-trip]",el=>{S.trip=el.dataset.trip;S.sel=null;if(S.trip==="ow")S.back=0;render()});
+  on("[data-city]",el=>{if(S.city!==el.dataset.city){S.city=el.dataset.city;S.cabin="any";S.cabSet=false;S.out=0;S.back=0;S.sel=null;S.dir="out"}pick(el,2)});
+  on("#showAll",()=>{S.showAll=true;render()});
+  on("[data-copy]",el=>{Promise.resolve(copyText(el.dataset.copy)).catch(()=>{}).finally(()=>{el.textContent="Copied ✓";setTimeout(()=>{el.textContent="Copy these details"},2000)})});
+  on("[data-trip]",el=>{S.trip=el.dataset.trip;S.tripSet=true;S.sel=null;if(S.trip==="ow")S.back=0;pick(el,3)});
+  on("[data-npax]",el=>{S.pax=+el.dataset.npax;S.paxSet=true;save();pick(el,4)});
+  on("[data-ncab]",el=>{S.cabin=el.dataset.ncab;S.cabSet=true;S.out=0;S.back=0;S.sel=null;pick(el,5)});
   on("[data-dir]",el=>{S.dir=el.dataset.dir;S.out=0;S.back=0;S.sel=null;render()});
   on("[data-pax]",el=>{S.pax=Math.min(9,Math.max(1,S.pax+ +el.dataset.pax));save();render()});
   on("[data-cab]",el=>{S.cabin=el.dataset.cab;S.out=0;S.back=0;S.sel=null;render()});
-  on("[data-cal]",el=>{const d=+el.dataset.d;if(el.dataset.cal==="out"){S.out=S.out===d?0:d;if(S.back&&S.back<S.out)S.back=0}else S.back=S.back===d?0:d;S.sel=null;render()});
+  on("[data-cal]",el=>{const d=+el.dataset.d,isOut=el.dataset.cal==="out",first=isOut&&!S.out;if(isOut){S.out=S.out===d?0:d;if(S.back&&S.back<S.out)S.back=0}else S.back=S.back===d?0:d;S.sel=null;render();if(first&&S.trip==="rt"&&S.out){const bh=$("backHead");if(bh)bh.scrollIntoView({behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"})}});
   on("[data-clear]",el=>{if(el.dataset.clear==="out"){S.out=0}else S.back=0;S.sel=null;render()});
   const bal=$("bal");if(bal){bal.addEventListener("input",()=>{const v=parseInt(bal.value.replace(/[^0-9]/g,""),10)||0;S.bal=v;save()});bal.addEventListener("blur",()=>{bal.value=fmt(S.bal);render()});bal.addEventListener("focus",()=>bal.select())}
   on("[data-add]",el=>{S.bal=Math.max(0,S.bal+ +el.dataset.add);save();render()});
   on("[data-set]",el=>{S.bal=+el.dataset.set;save();render()});
-  on("[data-go]",el=>go(+el.dataset.go));
+  on("[data-go]",el=>{S.ret=true;go(+el.dataset.go)});
   on("[data-sel]",el=>{S.sel=el.dataset.sel;render();window.scrollTo({top:0})});
   on("[data-fix]",el=>{const f=el.dataset.fix;if(f==="cabin")S.cabin="any";if(f==="dates"){S.out=0;S.back=0}if(f==="ow"){S.trip="ow";S.back=0}if(f==="rt")S.trip="rt";if(f==="dir"){S.dir=S.dir==="out"?"in":"out";S.out=0;S.back=0}S.sel=null;render();window.scrollTo({top:0})});
-  on("[data-plan]",el=>{S.mode="plan";S.city=el.dataset.plan;S.cabin=el.dataset.pcab;S.dir="out";S.out=0;S.back=0;S.sel=null;setMode();go(2)});
+  on("[data-plan]",el=>{S.mode="plan";S.city=el.dataset.plan;S.cabin=el.dataset.pcab;S.cabSet=true;S.dir="out";S.out=0;S.back=0;S.sel=null;setMode();go(2)});
   on("#more",()=>{S.shown+=15;render()});
   [["fs","sort"],["ff","fit"],["fo","fop"],["fc","fcab"]].forEach(([id,k])=>{const e=$(id);if(e)e.addEventListener("change",()=>{S[k]=e.value;S.shown=15;render()})});
   const s4=$("s4");if(s4){const gap=options().find(o=>o.k===S.sel).total-S.bal;const upd=()=>{const pm=(+$("s4").value||0)*4+(+$("sg").value||0)*(+$("mg").value||0);const m=pm>0?gap/pm:Infinity;$("earn").innerHTML=`<div class="grid2"><div class="stat"><b>${fmt(pm)}</b><span>Miles per month</span></div><div class="stat"><b>${isFinite(m)?(m<1?"Under 1":m.toFixed(1)):"—"}</b><span>Months to close the gap</span></div></div>`};["s4","sg","mg"].forEach(id=>$(id).addEventListener("input",upd));upd()}
@@ -584,19 +634,31 @@ function wire(){
 function setMode(){document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-selected",b.dataset.mode===S.mode))}
 document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>{S.mode=b.dataset.mode;setMode();render(true);window.scrollTo({top:0})}));
 $("bBack").addEventListener("click",()=>go(Math.max(1,S.step-1)));
-$("bNext").addEventListener("click",()=>{if(S.step===4){S.city=null;S.out=0;S.back=0;S.sel=null;S.q="";go(1)}else if(!(S.step===1&&!S.city))go(S.step+1)});
+$("bNext").addEventListener("click",()=>{if(S.step===7){S.city=null;S.out=0;S.back=0;S.sel=null;S.q="";S.showAll=false;S.tripSet=S.paxSet=S.cabSet=false;S.ret=false;go(1)}else go(S.ret?7:S.step+1)});
 (function(){const end=new Date("2026-10-31T23:59:00+08:00"),d=Math.ceil((end-new Date())/864e5);$("deadline").textContent=d>0?`Book by 31 Oct · ${d} day${d>1?"s":""} left`:"November booking closed"})();
 render();
 (function(){
   const H="e74d52a9119a26d3e913a200e45bd51a9932739c3b22cb9b781670637a1d8e8e";
   const open=()=>{document.body.classList.remove("locked");$("lock").hidden=true};
   try{if(localStorage.getItem("kf_ok_v2")===H){open();return}}catch(e){}
-  async function sha(s){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
-  $("lockForm").addEventListener("submit",async e=>{e.preventDefault();
+  function sha256js(str){const msg=new TextEncoder().encode(str);const K=[],H=[];const frac=x=>((x-Math.floor(x))*4294967296)|0;
+for(let n=2,c=0;c<64;n++){let p=true;for(let i=2;i*i<=n;i++)if(n%i===0){p=false;break}if(p){if(c<8)H[c]=frac(Math.sqrt(n));K[c++]=frac(Math.cbrt(n))}}
+const l=msg.length,bl=((l+9+63)>>6)<<6,m=new Uint8Array(bl);m.set(msg);m[l]=0x80;const dv=new DataView(m.buffer),bits=l*8;dv.setUint32(bl-4,bits>>>0);dv.setUint32(bl-8,Math.floor(bits/4294967296));
+const W=new Int32Array(64),r=(x,k)=>(x>>>k)|(x<<(32-k));
+for(let o=0;o<bl;o+=64){for(let i=0;i<16;i++)W[i]=dv.getInt32(o+i*4);
+for(let i=16;i<64;i++){const a=W[i-15],b=W[i-2];W[i]=(W[i-16]+(r(a,7)^r(a,18)^(a>>>3))+W[i-7]+(r(b,17)^r(b,19)^(b>>>10)))|0}
+let[a,b,c,d,e,f,g,h]=H;for(let i=0;i<64;i++){const t1=(h+(r(e,6)^r(e,11)^r(e,25))+((e&f)^(~e&g))+K[i]+W[i])|0,t2=((r(a,2)^r(a,13)^r(a,22))+((a&b)^(a&c)^(b&c)))|0;h=g;g=f;f=e;e=(d+t1)|0;d=c;c=b;b=a;a=(t1+t2)|0}
+H[0]=(H[0]+a)|0;H[1]=(H[1]+b)|0;H[2]=(H[2]+c)|0;H[3]=(H[3]+d)|0;H[4]=(H[4]+e)|0;H[5]=(H[5]+f)|0;H[6]=(H[6]+g)|0;H[7]=(H[7]+h)|0}
+return H.map(x=>(x>>>0).toString(16).padStart(8,"0")).join("")}
+  async function sha(s){try{const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode(s));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}catch(e){return sha256js(s)}}
+  const tryUnlock=async()=>{
     const v=$("pw").value.toLowerCase().replace(/\s+/g,"");
     if(!v){$("pwErr").textContent="Enter the password to continue.";return}
-    if(await sha(v)===H){try{localStorage.setItem("kf_ok_v2",H)}catch(e){}open();window.scrollTo({top:0})}
-    else{$("pwErr").textContent="That password isn't right. Check the spelling and try again.";$("pw").select()}});
+    let hv;try{hv=await sha(v)}catch(e){hv=sha256js(v)}
+    if(hv===H){try{localStorage.setItem("kf_ok_v2",H)}catch(e){}open();window.scrollTo({top:0})}
+    else{$("pwErr").textContent="That password isn't right. Check the spelling and try again.";$("pw").select()}};
+  $("unlockBtn").addEventListener("click",tryUnlock);
+  $("pw").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();tryUnlock()}});
   setTimeout(()=>$("pw").focus(),50);
   $("relock").addEventListener("click",()=>{try{localStorage.removeItem("kf_ok_v2");localStorage.removeItem("kf_ok")}catch(e){}location.reload()});
 })();
